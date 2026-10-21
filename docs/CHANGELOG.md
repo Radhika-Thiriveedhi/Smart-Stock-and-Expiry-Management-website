@@ -310,3 +310,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: edi_interchange_service_002.py, cold_chain_telemetry_service_010.py
 
+## Sprint Release 045
+- **Scope**: `edi_interchange`
+- **Feature**: Ansi x12 wholesale dispatch interchange gateway.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: edi_interchange_service_003.py, cold_chain_telemetry_service_011.py
+
