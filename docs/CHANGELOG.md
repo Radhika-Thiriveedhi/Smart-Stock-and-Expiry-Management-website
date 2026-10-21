@@ -16,3 +16,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: demand_forecasting_service_002.py, pricing_elasticity_service_010.py
 
+## Sprint Release 003
+- **Scope**: `demand_forecasting`
+- **Feature**: Seasonal holt-winters retail demand forecasting.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: demand_forecasting_service_003.py, pricing_elasticity_service_011.py
+
