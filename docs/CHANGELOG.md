@@ -100,3 +100,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: demand_forecasting_service_014.py, loss_prevention_service_008.py
 
+## Sprint Release 015
+- **Scope**: `retail_catalog`
+- **Feature**: Retail product registry and sku categorization.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: retail_catalog_service_001.py, loss_prevention_service_009.py
+
