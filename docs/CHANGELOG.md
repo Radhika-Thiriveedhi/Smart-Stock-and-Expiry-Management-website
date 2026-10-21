@@ -457,3 +457,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: supply_simulation_service_009.py
 
+## Sprint Release 066
+- **Scope**: `supply_simulation`
+- **Feature**: Monte carlo supplier lead time variability model.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: supply_simulation_service_010.py
+
