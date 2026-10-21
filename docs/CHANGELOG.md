@@ -618,3 +618,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Ramya Sri
 - **Modules Included**: inventory_optimization_service_004.py
 
+## Sprint Release 089
+- **Scope**: `inventory_optimization`
+- **Feature**: Multi-echelon economic order quantity eoq optimizer.
+- **Lead Engineer**: Ramya Sri
+- **Reviewed & Merged By**: Phani
+- **Modules Included**: inventory_optimization_service_005.py
+
