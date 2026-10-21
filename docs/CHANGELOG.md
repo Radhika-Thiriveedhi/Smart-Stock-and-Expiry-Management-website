@@ -191,3 +191,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Radhika Thiriveedhi
 - **Modules Included**: retail_catalog_service_013.py, warehouse_logistics_service_007.py
 
+## Sprint Release 028
+- **Scope**: `retail_catalog`
+- **Feature**: Retail product registry and sku categorization.
+- **Lead Engineer**: Radhika Thiriveedhi
+- **Reviewed & Merged By**: Ramya Sri
+- **Modules Included**: retail_catalog_service_014.py, warehouse_logistics_service_008.py
+
