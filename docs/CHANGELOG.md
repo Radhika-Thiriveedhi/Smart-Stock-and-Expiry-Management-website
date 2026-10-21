@@ -590,3 +590,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Radhika Thiriveedhi
 - **Modules Included**: food_safety_audit_service_014.py
 
+## Sprint Release 085
+- **Scope**: `inventory_optimization`
+- **Feature**: Multi-echelon economic order quantity eoq optimizer.
+- **Lead Engineer**: Radhika Thiriveedhi
+- **Reviewed & Merged By**: Ramya Sri
+- **Modules Included**: inventory_optimization_service_001.py
+
