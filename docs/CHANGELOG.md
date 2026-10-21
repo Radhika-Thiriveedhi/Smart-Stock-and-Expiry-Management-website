@@ -65,3 +65,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Radhika Thiriveedhi
 - **Modules Included**: demand_forecasting_service_009.py, loss_prevention_service_003.py
 
+## Sprint Release 010
+- **Scope**: `demand_forecasting`
+- **Feature**: Seasonal holt-winters retail demand forecasting.
+- **Lead Engineer**: Radhika Thiriveedhi
+- **Reviewed & Merged By**: Ramya Sri
+- **Modules Included**: demand_forecasting_service_010.py, loss_prevention_service_004.py
+
