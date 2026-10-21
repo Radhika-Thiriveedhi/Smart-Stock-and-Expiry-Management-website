@@ -814,3 +814,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: pricing_elasticity_service_004.py
 
+## Sprint Release 117
+- **Scope**: `pricing_elasticity`
+- **Feature**: Perishable markdown clearance elasticity curve.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: pricing_elasticity_service_005.py
+
