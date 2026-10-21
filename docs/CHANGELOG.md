@@ -268,3 +268,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Phani
 - **Modules Included**: statutory_tax_service_010.py, cold_chain_telemetry_service_004.py
 
+## Sprint Release 039
+- **Scope**: `statutory_tax`
+- **Feature**: Statutory retail tax and gst vat deduction engine.
+- **Lead Engineer**: Phani
+- **Reviewed & Merged By**: Radhika Thiriveedhi
+- **Modules Included**: statutory_tax_service_011.py, cold_chain_telemetry_service_005.py
+
