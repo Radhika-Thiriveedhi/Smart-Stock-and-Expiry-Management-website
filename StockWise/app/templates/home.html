@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}StockWise — Smart Stock & Expiry Management{% endblock %}
+{% block page_title %}Store Landing & System Guide{% endblock %}
+
+{% block content %}
+<div style="max-width: 1060px; margin: 20px auto;">
+
+  <!-- Hero Header Section with Emerald/Sapphire Modern Retail Accent -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 48px 42px; margin-bottom: 32px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #10b981, #0284c7, #6366f1);"></div>
+    <div style="max-width: 740px;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--color-success-bg); color: var(--color-success); font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: var(--radius-full); margin-bottom: 18px; border: 1px solid var(--color-success-border);">
+        <span style="width: 7px; height: 7px; background: var(--color-success); border-radius: 50%; box-shadow: 0 0 6px var(--color-success);"></span>
+        Smart Retail Inventory &amp; Expiry Management
+      </div>
+      <h1 style="font-size: 2.4rem; margin-bottom: 14px; letter-spacing: -0.035em; color: var(--text-main); line-height: 1.2;">
+        Eliminate expired stock loss. Automate store replenishment.
+      </h1>
+      <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 26px;">
+        StockWise is a batch-tracked inventory management platform built for grocery stores, supermarkets, pharmacies, and retailers. It tracks individual delivery lots, enforces <strong>FEFO (First Expired, First Out)</strong>, and prevents shrinkage.
+      </p>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <a href="{{ url_for('public.demo_login', role='employee') }}" class="btn btn-primary" style="padding: 11px 24px; font-size: 14px; background: var(--brand-primary); color: #ffffff;">
+          Launch Cashier POS (Record Sale) &rarr;
+        </a>
+        <a href="{{ url_for('public.demo_login', role='owner') }}" class="btn btn-secondary" style="padding: 11px 20px; font-size: 14px;">
+          View Store Owner Financials
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary" style="padding: 11px 18px; font-size: 14px;">
+          Sign In
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- How StockWise Works: 3 Steps Visual Flow -->
+  <div style="margin-bottom: 36px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <span class="badge badge-info" style="margin-bottom: 8px;">The Smart Engine</span>
+      <h2 style="font-size: 1.45rem;">How StockWise Works in 3 Simple Steps</h2>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">Never lose track of expiry dates or guess what needs reordering.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+      <!-- Step 1 -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #0284c7;"></div>
+        <div style="width: 38px; height: 38px; background: var(--color-info-bg); color: var(--color-info); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; margin-bottom: 14px;">1</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Delivery Intake with Batches</h3>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55;">
+          When 100 cartons of milk arrive, StockWise records a separate batch with its specific expiry date and purchase cost. Deliveries of the same product never get mixed up.
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #10b981;"></div>
+        <div style="width: 38px; height: 38px; background: var(--color-success-bg); color: var(--color-success); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; margin-bottom: 14px;">2</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 8px;">First Expired, First Out (FEFO)</h3>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55;">
+          When a cashier records a customer sale, the system automatically draws from the oldest eligible non-expired batch first. Expired stock is automatically locked from sale.
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #f59e0b;"></div>
+        <div style="width: 38px; height: 38px; background: var(--color-warning-bg); color: var(--color-warning); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; margin-bottom: 14px;">3</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Automated Alerts &amp; Margins</h3>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.55;">
+          Managers get instant warnings when milk is 3 days from expiry or bread is low in stock. The owner reviews true gross profit after batch purchase costs (COGS).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Role Walkthrough Cards -->
+  <div style="margin-bottom: 36px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <h2 style="font-size: 1.35rem;">Choose Your Dashboard Experience</h2>
+        <p style="font-size: 13px; color: var(--text-muted);">StockWise provides distinct permission tiers for each role in the shop.</p>
+      </div>
+      <span style="font-size: 12px; color: var(--text-light);">Click any card to launch immediately &bull; No password required</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 20px;">
+      <!-- Dashboard 1: Employee -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #0284c7;"></div>
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span class="badge badge-info">Dashboard 1</span>
+            <span style="font-size: 11.5px; font-weight: 700; color: #0284c7;">Daily Operations</span>
+          </div>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">Store Employee (Cashier)</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Used by shop cashiers and floor staff for fast daily counter sales.
+          </p>
+          <ul style="font-size: 12.5px; color: var(--text-muted); padding-left: 18px; line-height: 1.7; margin-bottom: 20px;">
+            <li>Smart POS checkout with barcode scanner simulator</li>
+            <li>Record customer sales with automatic FEFO selection</li>
+            <li>Receive new deliveries and assign expiry dates</li>
+            <li>Print professional transaction receipts</li>
+          </ul>
+        </div>
+        <a href="{{ url_for('public.demo_login', role='employee') }}" class="btn btn-primary btn-sm" style="width: 100%; padding: 9px; background: #0284c7; border-color: #0284c7; color: #ffffff;">
+          Launch Employee POS &rarr;
+        </a>
+      </div>
+
+      <!-- Dashboard 2: Inventory Manager -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #d97706;"></div>
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span class="badge badge-warning">Dashboard 2</span>
+            <span style="font-size: 11.5px; font-weight: 700; color: #d97706;">Stock &amp; Ordering</span>
+          </div>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">Inventory Manager</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Used by the stock controller to maintain shelves and suppliers.
+          </p>
+          <ul style="font-size: 12.5px; color: var(--text-muted); padding-left: 18px; line-height: 1.7; margin-bottom: 20px;">
+            <li>Monitor low-stock items with 1-click reorder suggestions</li>
+            <li>Filter batches by expiry date (&le; 3 days, &le; 7 days, expired)</li>
+            <li>Clearance markdowns and 1-click discard into waste log</li>
+            <li>Physical stock audit reconciliation tool</li>
+          </ul>
+        </div>
+        <a href="{{ url_for('public.demo_login', role='manager') }}" class="btn btn-secondary btn-sm" style="width: 100%; padding: 9px;">
+          Launch Manager View &rarr;
+        </a>
+      </div>
+
+      <!-- Dashboard 3: Business Owner -->
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #10b981;"></div>
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span class="badge badge-success">Dashboard 3</span>
+            <span style="font-size: 11.5px; font-weight: 700; color: #059669;">Executive Decisions</span>
+          </div>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">Business Owner</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            Used by the store owner to track profitability and eliminate loss.
+          </p>
+          <ul style="font-size: 12.5px; color: var(--text-muted); padding-left: 18px; line-height: 1.7; margin-bottom: 20px;">
+            <li>Daily, weekly, and monthly sales vs. gross margin (COGS)</li>
+            <li>Category asset distribution Donut Chart and 7-day Area Chart</li>
+            <li>Track recorded wastage &amp; shrinkage financial loss</li>
+            <li>Export audit logs and datasets to CSV with 1 click</li>
+          </ul>
+        </div>
+        <a href="{{ url_for('public.demo_login', role='owner') }}" class="btn btn-secondary btn-sm" style="width: 100%; padding: 9px;">
+          Launch Owner View &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Current Store Snapshot Table -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+      <div>
+        <h3 style="font-size: 1.15rem;">Live Store Inventory Snapshot</h3>
+        <p style="font-size: 12.5px; color: var(--text-muted);">Real-time status calculated from stored JSON batches.</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <span class="badge badge-info">{{ metrics.total_products }} Products Active</span>
+        <span class="badge badge-warning">{{ metrics.near_expiry_count }} Expiring Soon</span>
+        <span class="badge badge-danger">{{ metrics.expired_count }} Expired</span>
+      </div>
+    </div>
+
+    <div class="metrics-grid" style="margin-bottom: 0;">
+      <div class="metric-card">
+        <div class="metric-title">Store Catalogue</div>
+        <div class="metric-value">{{ metrics.total_products }}</div>
+        <div class="metric-footer">Products in catalogue</div>
+      </div>
+      <div class="metric-card warning">
+        <div class="metric-title">Low Stock Alert</div>
+        <div class="metric-value">{{ metrics.low_stock_count }}</div>
+        <div class="metric-footer">Need reordering</div>
+      </div>
+      <div class="metric-card orange">
+        <div class="metric-title">Nearing Expiry (7d)</div>
+        <div class="metric-value">{{ metrics.near_expiry_count }}</div>
+        <div class="metric-footer">Batches need priority sale</div>
+      </div>
+      <div class="metric-card danger">
+        <div class="metric-title">Expired Batches</div>
+        <div class="metric-value">{{ metrics.expired_count }}</div>
+        <div class="metric-footer">Need disposal</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

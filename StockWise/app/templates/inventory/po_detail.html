@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Order {{ po.po_number }} — StockWise{% endblock %}
+{% block page_title %}Purchase Order / {{ po.po_number }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Purchase Order: {{ po.po_number }}</h2>
+      <p class="greeting-text">Created on {{ po.created_at|date_short }} by {{ po.creator_name }}</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a href="{{ url_for('purchases.index') }}" class="btn btn-secondary">&larr; Back to POs</a>
+      {% if po.status != 'COMPLETED' %}
+        <a href="{{ url_for('purchases.receive_goods', po_id=po.id) }}" class="btn btn-primary">Receive Delivery</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="section-grid" style="margin-bottom: 24px;">
+  <!-- Order Overview -->
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px;">
+    <h3 style="margin-bottom: 14px;">Order Summary</h3>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Supplier:</span>
+        <strong>{{ po.supplier_name }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Expected Delivery:</span>
+        <strong class="font-mono">{{ po.expected_delivery_date }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Order Status:</span>
+        <div>
+          {% if po.status == 'COMPLETED' %}
+            <span class="badge badge-success">Completed</span>
+          {% elif po.status == 'PARTIALLY_RECEIVED' %}
+            <span class="badge badge-warning">Partially Received</span>
+          {% else %}
+            <span class="badge badge-info">Ordered</span>
+          {% endif %}
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Total Cost:</span>
+        <strong class="font-mono" style="font-size: 14px;">{{ po.total_cost|currency }}</strong>
+      </div>
+      {% if po.notes %}
+        <div style="margin-top: 6px;">
+          <span class="text-muted">Notes:</span>
+          <p style="font-size: 12px; margin-top: 2px;">{{ po.notes }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Progress Card -->
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <h3 style="margin-bottom: 14px;">Receiving Progress</h3>
+      <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">
+        {{ po.total_received }} / {{ po.total_ordered }} Units ({{ po.progress_pct }}%)
+      </div>
+      <div style="width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; margin-bottom: 16px;">
+        <div style="width: {{ po.progress_pct }}%; height: 100%; background: {% if po.status == 'COMPLETED' %}var(--color-success){% else %}var(--brand-accent){% endif %};"></div>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        {% if po.status == 'COMPLETED' %}
+          All items on this purchase order have been received and converted into active inventory batches.
+        {% else %}
+          Items can be received in partial increments as physical supplier deliveries arrive at the store.
+        {% endif %}
+      </p>
+    </div>
+
+    {% if po.status != 'COMPLETED' %}
+      <div style="margin-top: 16px;">
+        <a href="{{ url_for('purchases.receive_goods', po_id=po.id) }}" class="btn btn-primary" style="width: 100%;">
+          Record Delivery Receipt
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Line Items Table -->
+<div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px;">
+  <h3 style="margin-bottom: 14px;">Ordered Items</h3>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Ordered Qty</th>
+          <th>Received Qty</th>
+          <th>Remaining Expected</th>
+          <th>Unit Cost</th>
+          <th class="text-right">Line Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in po.items %}
+          <tr>
+            <td><strong>{{ item.product_name }}</strong></td>
+            <td>{{ item.quantity_ordered }}</td>
+            <td>
+              <strong {% if item.quantity_received >= item.quantity_ordered %}style="color: var(--color-success);"{% endif %}>
+                {{ item.quantity_received }}
+              </strong>
+            </td>
+            <td>
+              {% set rem = item.quantity_ordered - item.quantity_received %}
+              {% if rem <= 0 %}
+                <span class="badge badge-success">Fulfilled</span>
+              {% else %}
+                <span class="badge badge-warning">{{ rem }} pending</span>
+              {% endif %}
+            </td>
+            <td class="font-mono">{{ item.unit_cost|currency }}</td>
+            <td class="text-right font-mono">{{ item.subtotal|currency }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

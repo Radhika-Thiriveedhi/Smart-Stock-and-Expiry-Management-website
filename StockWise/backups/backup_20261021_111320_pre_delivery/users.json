@@ -1,0 +1,32 @@
+[
+  {
+    "id": "USR-001",
+    "username": "owner",
+    "name": "Sarah Jenkins",
+    "role": "owner",
+    "password_hash": "scrypt:32768:8:1$uHkmkS2K3p0qX8c8$6aa0de36b53aeeff26ff73286f06a099f36f32863953746c26b864a7c06ebba68c349cb63da31e7f3cb067ec80a8b9e6443c5bdf135a5cb3c8daaf1dcfbcae0f",
+    "email": "owner@stockwise.local",
+    "active": true,
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "USR-002",
+    "username": "manager",
+    "name": "David Miller",
+    "role": "manager",
+    "password_hash": "scrypt:32768:8:1$7DkE0M1O8aX4tY2r$30c000fbbab9b2ff9245fcb621f375084931a29959f635fbbdb6f0c6fa4d03da249ba9c323f5b7468fb71e847c50beaf7e48b8b98457c152d5804369be346452",
+    "email": "manager@stockwise.local",
+    "active": true,
+    "created_at": "2026-09-05T09:30:00"
+  },
+  {
+    "id": "USR-003",
+    "username": "employee",
+    "name": "Alex Rivera",
+    "role": "employee",
+    "password_hash": "scrypt:32768:8:1$6k9LmP2W5rY8qZ1v$14594c9f131a47346fa01362095a5fbc4ce22c954f0a9dfeb14125f48374d6b713437d2f8cbdafa4ffc5ceac66ea9d9e689be502b4ce70a312ba2ee598a3b839",
+    "email": "alex@stockwise.local",
+    "active": true,
+    "created_at": "2026-09-10T10:15:00"
+  }
+]

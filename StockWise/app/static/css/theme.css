@@ -1,0 +1,240 @@
+/* StockWise Premium Design System 3.0
+   Modern Retail Platform Aesthetic (Shopify POS + Stripe + Linear)
+   Themes: Emerald Retail (Default), Sapphire FinTech, Obsidian Dark */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ========================================================
+   THEME 1: WARM LIGHT BROWN (Default: Warm Sand & Roasted Chestnut)
+   ======================================================== */
+:root, [data-theme="brown"] {
+  --bg-app: #f4ede4;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #fdfaf6;
+  --bg-subtle: #ede1d3;
+  --bg-subtle-hover: #e4d5c4;
+  --bg-sidebar: #2b1d14;
+  --bg-sidebar-user: #1f130b;
+  --bg-sidebar-nav: #2b1d14;
+  --bg-sidebar-active: #784725;
+  
+  --text-main: #2b1d14;
+  --text-secondary: #4d382b;
+  --text-muted: #78604d;
+  --text-light: #9a8472;
+  --text-sidebar: #ede1d3;
+  
+  --border-subtle: #ede1d3;
+  --border-light: #decbc0;
+  --border-color: #cbb8a3;
+  --border-sidebar: #3d2b1f;
+  
+  /* Brand Primary: Warm Roasted Chestnut Brown */
+  --brand-primary: #784725;
+  --brand-primary-hover: #613619;
+  --brand-accent: #8d5229;
+  --brand-accent-bg: #f6ece2;
+  
+  /* Status Colors */
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  
+  --color-info: #784725;
+  --color-info-bg: #f4ede4;
+  --color-info-border: #decbc0;
+
+  --color-indigo: #8d5229;
+  --color-indigo-bg: #f6ece2;
+
+  /* Card Accents */
+  --card-glow-1: linear-gradient(90deg, #784725, #8d5229);
+  --card-glow-2: linear-gradient(90deg, #b45309, #d97706);
+  --card-glow-3: linear-gradient(90deg, #c2410c, #ea580c);
+  --card-glow-4: linear-gradient(90deg, #b91c1c, #dc2626);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(43, 29, 20, 0.05);
+  --shadow-sm: 0 2px 4px rgba(43, 29, 20, 0.06), 0 1px 2px rgba(43, 29, 20, 0.04);
+  --shadow-md: 0 6px 12px -2px rgba(43, 29, 20, 0.08), 0 3px 6px -2px rgba(43, 29, 20, 0.05);
+  --shadow-lg: 0 12px 24px -4px rgba(43, 29, 20, 0.10), 0 4px 8px -2px rgba(43, 29, 20, 0.04);
+  
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', SFMono-Regular, monospace;
+}
+
+/* ========================================================
+   THEME 2: EMERALD RETAIL (Fresh, Green)
+   ======================================================== */
+[data-theme="emerald"] {
+  --bg-app: #f4f6f9;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-subtle-hover: #f1f5f9;
+  --bg-sidebar: #0a0f1d;
+  --bg-sidebar-user: #050811;
+  --bg-sidebar-nav: #0a0f1d;
+  --bg-sidebar-active: #10b981;
+  
+  --text-main: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-sidebar: #cbd5e1;
+  
+  --border-subtle: #f1f5f9;
+  --border-light: #e5e7eb;
+  --border-color: #d1d5db;
+  --border-sidebar: #1e293b;
+  
+  --brand-primary: #10b981;
+  --brand-primary-hover: #059669;
+  --brand-accent: #059669;
+  --brand-accent-bg: #ecfdf5;
+  
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  
+  --color-danger: #e11d48;
+  --color-danger-bg: #fff1f2;
+  --color-danger-border: #fecdd3;
+  
+  --color-info: #0284c7;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #bae6fd;
+
+  --color-indigo: #6366f1;
+  --color-indigo-bg: #eef2ff;
+}
+
+/* ========================================================
+   THEME 2: SAPPHIRE FINTECH (Stripe / Executive Blue)
+   ======================================================== */
+[data-theme="sapphire"] {
+  --bg-app: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-subtle-hover: #e2e8f0;
+  --bg-sidebar: #0f172a;
+  --bg-sidebar-user: #080d1a;
+  --bg-sidebar-nav: #0f172a;
+  --bg-sidebar-active: #2563eb;
+  
+  --text-main: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-sidebar: #cbd5e1;
+  
+  --border-subtle: #f1f5f9;
+  --border-light: #e2e8f0;
+  --border-color: #cbd5e1;
+  --border-sidebar: #1e293b;
+  
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-accent: #2563eb;
+  --brand-accent-bg: #eff6ff;
+  
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  
+  --color-info: #0284c7;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #bae6fd;
+
+  --card-glow-1: linear-gradient(90deg, #2563eb, #3b82f6);
+  --card-glow-2: linear-gradient(90deg, #f59e0b, #fbbf24);
+  --card-glow-3: linear-gradient(90deg, #f97316, #fb923c);
+  --card-glow-4: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+/* ========================================================
+   THEME 3: OBSIDIAN DARK (Deep Cyber Pro Dark Mode)
+   ======================================================== */
+[data-theme="dark"], [data-theme="obsidian"] {
+  --bg-app: #080b14;
+  --bg-surface: #101626;
+  --bg-surface-elevated: #1a2238;
+  --bg-subtle: #172033;
+  --bg-subtle-hover: #222e49;
+  --bg-sidebar: #080c18;
+  --bg-sidebar-user: #04070e;
+  --bg-sidebar-nav: #080c18;
+  --bg-sidebar-active: #10b981;
+  
+  --text-main: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --text-sidebar: #94a3b8;
+  
+  --border-subtle: #1a2238;
+  --border-light: #1f293d;
+  --border-color: #2d3b55;
+  --border-sidebar: #192237;
+  
+  --brand-primary: #10b981;
+  --brand-primary-hover: #34d399;
+  --brand-accent: #38bdf8;
+  --brand-accent-bg: rgba(56, 189, 248, 0.12);
+  
+  --color-success: #34d399;
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-success-border: rgba(16, 185, 129, 0.3);
+  
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+  
+  --color-danger: #fb7185;
+  --color-danger-bg: rgba(244, 63, 94, 0.15);
+  --color-danger-border: rgba(244, 63, 94, 0.3);
+  
+  --color-info: #60a5fa;
+  --color-info-bg: rgba(59, 130, 246, 0.15);
+  --color-info-border: rgba(59, 130, 246, 0.3);
+
+  --color-indigo: #818cf8;
+  --color-indigo-bg: rgba(99, 102, 241, 0.15);
+
+  --card-glow-1: linear-gradient(90deg, #60a5fa, #818cf8);
+  --card-glow-2: linear-gradient(90deg, #fbbf24, #f59e0b);
+  --card-glow-3: linear-gradient(90deg, #fb923c, #f97316);
+  --card-glow-4: linear-gradient(90deg, #f43f5e, #e11d48);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.8);
+}

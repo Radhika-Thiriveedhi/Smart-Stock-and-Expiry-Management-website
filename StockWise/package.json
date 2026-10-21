@@ -1,0 +1,22 @@
+{
+  "name": "smart-stock-and-expiry-management",
+  "version": "4.2.0",
+  "description": "StockWise - Smart Stock & Expiry Management System",
+  "scripts": {
+    "start": "python main.py",
+    "dev": "python main.py",
+    "build": "python build_app_code.py",
+    "test": "python -m unittest discover -s tests -p \"test_*.py\""
+  },
+  "author": "Radhika Thiriveedhi <radhika.thiriveedhi@users.noreply.github.com>",
+  "contributors": [
+    "Radhika Thiriveedhi <radhika.thiriveedhi@users.noreply.github.com>",
+    "Ramya Sri <guntupalliramyasri@gmail.com>",
+    "Phani <23471a4392@gmail.com>"
+  ],
+  "collaborators": [
+    "Ramya Sri <guntupalliramyasri@gmail.com>",
+    "Phani <23471a4392@gmail.com>"
+  ],
+  "private": true
+}

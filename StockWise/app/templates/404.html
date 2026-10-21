@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found — StockWise{% endblock %}
+{% block page_title %}Not Found (404){% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 60px auto; text-align: center;">
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-sm);">
+    <span class="badge badge-muted" style="margin-bottom: 12px; font-size: 13px;">404 Error</span>
+    <h2 style="font-size: 1.4rem; margin-bottom: 8px;">Resource Not Found</h2>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">
+      The requested page or record could not be found. It may have been moved or removed.
+    </p>
+    <a href="{{ url_for('public.home') }}" class="btn btn-primary">Return Home</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+[
+  {
+    "type": "EXPIRED",
+    "title": "Batch Expired: Cheddar Cheese Block 250 g",
+    "message": "Batch BAT-015 expired on 2026-10-17 (2 block left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-015"
+  },
+  {
+    "type": "EXPIRED",
+    "title": "Batch Expired: Fresh Sliced White Bread",
+    "message": "Batch BAT-007 expired on 2026-10-18 (4 loaf left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-007"
+  },
+  {
+    "type": "EXPIRED",
+    "title": "Batch Expired: Sourdough Bread 400 g",
+    "message": "Batch BAT-006 expired on 2026-10-19 (3 loaf left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-006"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Expiring Soon: Sourdough Bread 400 g",
+    "message": "Batch BAT-005 Expires in 1 day (5 loaf left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-005"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Expiring Soon: Greek Yogurt 200 g",
+    "message": "Batch BAT-003 Expires in 3 days (8 cup left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-003"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Expiring Soon: Fresh Sliced White Bread",
+    "message": "Batch BAT-008 Expires in 3 days (28 loaf left).",
+    "severity": "danger",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-008"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Near Expiry: Whole Milk 500 ml",
+    "message": "Batch BAT-001 Expires in 4 days.",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-001"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Near Expiry: Fresh Orange Juice 1 L",
+    "message": "Batch BAT-009 Expires in 5 days.",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-009"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Near Expiry: Whole Milk 500 ml",
+    "message": "Batch BAT-002 Expires in 7 days.",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-002"
+  },
+  {
+    "type": "EXPIRY_WARNING",
+    "title": "Near Expiry: Farm Fresh Eggs 12-pack",
+    "message": "Batch BAT-017 Expires in 7 days.",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "BAT-017"
+  },
+  {
+    "type": "LOW_STOCK",
+    "title": "Low Stock: Basmati Rice 5 kg",
+    "message": "Remaining 5 bag, below reorder level (8).",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "PRD-007"
+  },
+  {
+    "type": "LOW_STOCK",
+    "title": "Low Stock: Extra Virgin Olive Oil 500 ml",
+    "message": "Remaining 4 bottle, below reorder level (6).",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "PRD-008"
+  },
+  {
+    "type": "LOW_STOCK",
+    "title": "Low Stock: Fresh Orange Juice 1 L",
+    "message": "Remaining 12 bottle, below reorder level (20).",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "PRD-005"
+  },
+  {
+    "type": "LOW_STOCK",
+    "title": "Low Stock: Sourdough Bread 400 g",
+    "message": "Remaining 5 loaf, below reorder level (10).",
+    "severity": "warning",
+    "created_at": "2026-10-21T10:37:21.789506",
+    "read": false,
+    "target_id": "PRD-003"
+  }
+]

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Batch {{ batch.id }} — StockWise{% endblock %}
+{% block page_title %}Batch Details / {{ batch.id }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Batch {{ batch.id }} &bull; {{ batch.product_name }}</h2>
+      <p class="greeting-text">Lot history, expiry timeline, and movement audit trail.</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a href="{{ url_for('inventory.batches') }}" class="btn btn-secondary">&larr; Back to Batches</a>
+      {% if batch.quantity_remaining > 0 %}
+        <a href="{{ url_for('employee.report_damage') }}?batch_id={{ batch.id }}" class="btn btn-outline-danger">Record Damage / Loss</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="section-grid" style="margin-bottom: 24px;">
+  <!-- Batch Metadata Card -->
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px;">
+    <h3 style="margin-bottom: 16px;">Batch Attributes</h3>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Product SKU:</span>
+        <strong class="font-mono">{{ batch.product_sku }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Supplier:</span>
+        <strong>{{ batch.supplier_name }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Date Received:</span>
+        <strong>{{ batch.received_date }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Expiry Date:</span>
+        <strong class="font-mono">{{ batch.expiry_date }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Unit Cost Basis:</span>
+        <strong class="font-mono">{{ batch.unit_cost|currency }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 6px;">
+        <span class="text-muted">Expiry Status:</span>
+        <span class="badge {{ batch.badge_class }}">{{ batch.expiry_label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Quantity Metrics -->
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <h3 style="margin-bottom: 16px;">Stock Position</h3>
+      <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+        <div style="flex: 1; background: var(--bg-app); padding: 14px; border-radius: var(--radius-sm); text-align: center;">
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Quantity Received</div>
+          <div style="font-size: 1.8rem; font-weight: 700;">{{ batch.quantity_received }}</div>
+          <div style="font-size: 11px; color: var(--text-light);">{{ batch.product_unit }}</div>
+        </div>
+
+        <div style="flex: 1; background: var(--bg-app); padding: 14px; border-radius: var(--radius-sm); text-align: center;">
+          <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Remaining Available</div>
+          <div style="font-size: 1.8rem; font-weight: 700; color: var(--brand-accent);">{{ batch.quantity_remaining }}</div>
+          <div style="font-size: 11px; color: var(--text-light);">{{ batch.product_unit }}</div>
+        </div>
+      </div>
+    </div>
+
+    {% if batch.quantity_remaining > 0 and batch.expiry_status == 'EXPIRED' %}
+      <div style="background: var(--color-danger-bg); border: 1px solid var(--color-danger-border); border-radius: var(--radius-sm); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 12px; color: var(--color-danger); font-weight: 600;">This batch is past expiry and should be removed.</span>
+        <form method="POST" action="{{ url_for('inventory.batch_discard', batch_id=batch.id) }}">
+          <input type="hidden" name="reason" value="EXPIRED">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Discard all remaining units?')">
+            Discard Stock
+          </button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Stock Movements for this Batch -->
+<div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px;">
+  <h3 style="margin-bottom: 14px;">Batch Movement History</h3>
+
+  {% if movements %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Reason / Reference</th>
+            <th>Logged By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in movements %}
+            <tr>
+              <td class="font-mono">{{ m.created_at|datetime_format }}</td>
+              <td>
+                {% if m.type == 'RECEIVE' %}
+                  <span class="badge badge-info">Receive</span>
+                {% elif m.type == 'SALE' %}
+                  <span class="badge badge-success">Sale</span>
+                {% elif m.type == 'WASTE' %}
+                  <span class="badge badge-danger">Waste</span>
+                {% else %}
+                  <span class="badge badge-muted">{{ m.type }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <strong {% if m.type in ['SALE', 'WASTE'] %}style="color: var(--color-danger);"{% else %}style="color: var(--color-success);"{% endif %}>
+                  {% if m.type in ['SALE', 'WASTE'] %}-{% else %}+{% endif %}{{ m.quantity }}
+                </strong>
+              </td>
+              <td>{{ m.reason }}</td>
+              <td>{{ m.user_name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="font-size: 13px; color: var(--text-muted);">No additional movements recorded for this batch yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

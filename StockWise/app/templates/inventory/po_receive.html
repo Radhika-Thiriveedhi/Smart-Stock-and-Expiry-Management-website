@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Receive Goods: {{ po.po_number }} — StockWise{% endblock %}
+{% block page_title %}Receive Goods / {{ po.po_number }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h2>Receive Delivery for {{ po.po_number }}</h2>
+        <p class="greeting-text">Supplier: {{ po.supplier_name }}. Enter delivered quantities and batch expiry dates to update store inventory.</p>
+      </div>
+      <a href="{{ url_for('purchases.po_detail', po_id=po.id) }}" class="btn btn-secondary">&larr; Back to Order</a>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('purchases.receive_goods', po_id=po.id) }}">
+    <div class="form-card" style="max-width: 100%;">
+      <div class="table-responsive" style="margin-bottom: 20px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 30%;">Product</th>
+              <th style="width: 15%;">Remaining Expected</th>
+              <th style="width: 18%;">Delivered Today <span style="color: var(--color-danger);">*</span></th>
+              <th style="width: 22%;">Batch Expiry Date <span style="color: var(--color-danger);">*</span></th>
+              <th style="width: 15%;">Unit Cost ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in po.items %}
+              {% set rem = item.quantity_ordered - item.quantity_received %}
+              {% if rem > 0 %}
+                <tr>
+                  <td>
+                    <input type="hidden" name="product_id[]" value="{{ item.product_id }}">
+                    <strong>{{ item.product_name }}</strong>
+                  </td>
+                  <td>{{ rem }} units</td>
+                  <td>
+                    <input type="number" name="received_quantity[]" class="form-control font-mono" min="0" max="{{ rem }}" value="{{ rem }}" required>
+                  </td>
+                  <td>
+                    <input type="date" name="expiry_date[]" class="form-control" required>
+                  </td>
+                  <td>
+                    <input type="number" name="unit_cost[]" class="form-control font-mono" min="0" step="0.01" value="{{ item.unit_cost }}">
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background: var(--color-info-bg); border: 1px solid var(--color-info-border); border-radius: var(--radius-sm); padding: 12px; font-size: 12px; color: var(--color-info); margin-bottom: 20px;">
+        Receiving these items will automatically generate new distinct stock batches with the provided expiry dates and log an audit movement.
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('purchases.po_detail', po_id=po.id) }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">Confirm Stock Intake</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

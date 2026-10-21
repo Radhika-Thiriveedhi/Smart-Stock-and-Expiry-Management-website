@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Batches — StockWise{% endblock %}
+{% block page_title %}Batch Inventory & Expiry Tracking{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Stock Batches & Expiry Management</h2>
+      <p class="greeting-text">Track individual delivery lots, cost basis, expiry dates, and remaining quantities.</p>
+    </div>
+    <a href="{{ url_for('employee.receive_stock') }}" class="btn btn-primary">+ Receive New Batch</a>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <form method="GET" action="{{ url_for('inventory.batches') }}" style="display: flex; gap: 10px; flex: 1; flex-wrap: wrap;">
+    <select name="status" class="form-control" style="max-width: 170px;" onchange="this.form.submit()">
+      <option value="">All Expiry Statuses</option>
+      <option value="EXPIRED" {% if selected_status == 'EXPIRED' %}selected{% endif %}>Expired Past Date</option>
+      <option value="CRITICAL" {% if selected_status == 'CRITICAL' %}selected{% endif %}>Critical (&le; 3 Days)</option>
+      <option value="WARNING" {% if selected_status == 'WARNING' %}selected{% endif %}>Warning (&le; 7 Days)</option>
+      <option value="UPCOMING" {% if selected_status == 'UPCOMING' %}selected{% endif %}>Upcoming (8-30 Days)</option>
+      <option value="HEALTHY" {% if selected_status == 'HEALTHY' %}selected{% endif %}>Healthy (&gt; 30 Days)</option>
+    </select>
+
+    <select name="product_id" class="form-control" style="max-width: 220px;" onchange="this.form.submit()">
+      <option value="">All Products</option>
+      {% for p in products %}
+        <option value="{{ p.id }}" {% if selected_product == p.id %}selected{% endif %}>{{ p.name }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="supplier_id" class="form-control" style="max-width: 200px;" onchange="this.form.submit()">
+      <option value="">All Suppliers</option>
+      {% for s in suppliers %}
+        <option value="{{ s.id }}" {% if selected_supplier == s.id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    {% if selected_status or selected_product or selected_supplier %}
+      <a href="{{ url_for('inventory.batches') }}" class="btn btn-secondary">Reset</a>
+    {% endif %}
+  </form>
+
+  <input type="text" placeholder="Quick search..." data-table-search="batches-table" class="form-control search-input" style="max-width: 200px;">
+</div>
+
+<div class="table-responsive">
+  <table class="data-table" id="batches-table">
+    <thead>
+      <tr>
+        <th>Batch ID</th>
+        <th>Product</th>
+        <th>Supplier</th>
+        <th>Received Date</th>
+        <th>Expiry Date</th>
+        <th>Remaining</th>
+        <th>Cost / Unit</th>
+        <th>Expiry Status</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in batches %}
+        <tr>
+          <td class="font-mono">
+            <a href="{{ url_for('inventory.batch_detail', batch_id=b.id) }}"><strong>{{ b.id }}</strong></a>
+          </td>
+          <td>
+            <strong>{{ b.product_name }}</strong>
+            <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }}</div>
+          </td>
+          <td>{{ b.supplier_name }}</td>
+          <td>{{ b.received_date }}</td>
+          <td class="font-mono"><strong>{{ b.expiry_date }}</strong></td>
+          <td>
+            <strong>{{ b.quantity_remaining }}</strong> / {{ b.quantity_received }} {{ b.product_unit }}
+          </td>
+          <td class="font-mono">{{ b.unit_cost|currency }}</td>
+          <td>
+            <span class="badge {{ b.badge_class }}">{{ b.expiry_label }}</span>
+          </td>
+          <td class="text-right">
+            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+              <a href="{{ url_for('inventory.batch_detail', batch_id=b.id) }}" class="btn btn-secondary btn-sm">Details</a>
+              {% if b.expiry_status == 'EXPIRED' and b.quantity_remaining > 0 %}
+                <form method="POST" action="{{ url_for('inventory.batch_discard', batch_id=b.id) }}" style="display:inline;">
+                  <input type="hidden" name="reason" value="EXPIRED">
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Discard {{ b.quantity_remaining }} expired units in batch {{ b.id }}?')">
+                    Discard
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

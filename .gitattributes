@@ -1,0 +1,5 @@
+* linguist-generated=false
+StockWise/app/enterprise/* linguist-generated=false
+app/enterprise/* linguist-generated=false
+*.py linguist-generated=false
+*.js linguist-generated=false

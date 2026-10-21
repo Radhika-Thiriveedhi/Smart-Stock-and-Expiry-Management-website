@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "smart-stock-and-expiry-management"
+version = "4.2.0"
+description = "StockWise — Smart Stock & Expiry Management System"
+authors = [
+    "Radhika Thiriveedhi <radhikathiriveedhi@gmail.com>",
+    "Ramya Sri <guntupalliramyasri@gmail.com>",
+    "Phani <23471a4392@gmail.com>"
+]
+readme = "README.md"
+packages = [{include = "app", from = "StockWise"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = ">=2.3.0"
+Werkzeug = ">=2.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

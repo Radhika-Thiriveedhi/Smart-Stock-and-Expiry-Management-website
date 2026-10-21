@@ -1,0 +1,38 @@
+[
+  {
+    "id": "AUD-001",
+    "timestamp": "2026-10-18T09:30:00",
+    "user_id": "USR-003",
+    "action": "RECEIVE_STOCK",
+    "target_type": "BATCH",
+    "target_id": "BAT-001",
+    "details": "Received 100 cartons of Whole Milk 500 ml"
+  },
+  {
+    "id": "AUD-002",
+    "timestamp": "2026-10-19T14:15:00",
+    "user_id": "USR-003",
+    "action": "RECORD_SALE",
+    "target_type": "SALE",
+    "target_id": "SAL-001",
+    "details": "Sale receipt REC-20261019-001: 62 units"
+  },
+  {
+    "id": "AUD-003",
+    "timestamp": "2026-10-20T17:00:00",
+    "user_id": "USR-003",
+    "action": "REPORT_DAMAGE",
+    "target_type": "WASTE",
+    "target_id": "WST-001",
+    "details": "Recorded 2 damaged Greek Yogurt containers"
+  },
+  {
+    "timestamp": "2026-10-21T11:08:27.612157",
+    "user_id": "USR-001",
+    "action": "RECEIVE_STOCK",
+    "target_type": "BATCH",
+    "target_id": "BAT-018",
+    "details": "Received 60 of Salted Potato Chips 150 g",
+    "id": "AUD-004"
+  }
+]

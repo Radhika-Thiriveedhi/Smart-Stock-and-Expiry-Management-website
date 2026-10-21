@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Valuation — StockWise{% endblock %}
+{% block page_title %}Store Inventory Valuation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Inventory Valuation & Capital Exposure</h2>
+      <p class="greeting-text">Asset valuation based on actual delivery purchase costs across all batches in store.</p>
+    </div>
+    <a href="{{ url_for('reports.export_inventory') }}" class="btn btn-primary btn-sm">Download Stock CSV</a>
+  </div>
+</div>
+
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-title">Total Units in Stock</div>
+    <div class="metric-value">{{ valuation.total_units }}</div>
+    <div class="metric-footer">Across all active batches</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-title">Total Cost Basis (Asset)</div>
+    <div class="metric-value font-mono">{{ valuation.total_cost_valuation|currency }}</div>
+    <div class="metric-footer">Wholesale purchase capital</div>
+  </div>
+
+  <div class="metric-card {% if valuation.at_risk_cost > 0 %}warning{% endif %}">
+    <div class="metric-title">Capital at Risk (&le; 7 Days)</div>
+    <div class="metric-value font-mono" style="color: var(--color-warning);">{{ valuation.at_risk_cost|currency }}</div>
+    <div class="metric-footer">Subject to near-term expiry</div>
+  </div>
+
+  <div class="metric-card {% if valuation.expired_cost > 0 %}danger{% endif %}">
+    <div class="metric-title">Expired Unsold Capital</div>
+    <div class="metric-value font-mono" style="color: var(--color-danger);">{{ valuation.expired_cost|currency }}</div>
+    <div class="metric-footer">Needs immediate write-off</div>
+  </div>
+</div>
+
+<div class="table-responsive" style="margin-top: 20px;">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Product Name</th>
+        <th>Category</th>
+        <th>Total Stock</th>
+        <th>Saleable</th>
+        <th>Unit Selling Price</th>
+        <th>Cost Valuation</th>
+        <th>Retail Potential</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td class="font-mono"><strong>{{ item.sku }}</strong></td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.category_name }}</td>
+          <td>{{ item.total_quantity }} {{ item.unit }}</td>
+          <td><strong>{{ item.saleable_quantity }}</strong></td>
+          <td class="font-mono">{{ item.selling_price|currency }}</td>
+          <td class="font-mono"><strong>{{ item.cost_value|currency }}</strong></td>
+          <td class="font-mono">{{ item.retail_value|currency }}</td>
+          <td>
+            {% if item.is_out_of_stock %}
+              <span class="badge badge-danger">Out of Stock</span>
+            {% elif item.is_low_stock %}
+              <span class="badge badge-warning">Low Stock</span>
+            {% else %}
+              <span class="badge badge-success">Optimal</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

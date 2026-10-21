@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Report Damage / Waste — StockWise{% endblock %}
+{% block page_title %}Store Employee / Report Damaged or Expired Goods{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 0 auto;">
+  <div class="page-header">
+    <h2>Report Damaged, Broken or Expired Goods</h2>
+    <p class="greeting-text">Stock recorded here will be immediately deducted from available inventory and recorded into the waste log.</p>
+  </div>
+
+  <div class="form-card">
+    <form method="POST" action="{{ url_for('employee.report_damage') }}">
+      <div class="form-group">
+        <label for="batch_id">Select Batch <span style="color: var(--color-danger);">*</span></label>
+        <select name="batch_id" id="batch_id" class="form-control" required>
+          <option value="">-- Choose Stock Batch --</option>
+          {% for b in batches %}
+            <option value="{{ b.id }}" {% if request.args.get('batch_id') == b.id %}selected{% endif %}>
+              {{ b.product_name }} &bull; Batch {{ b.id }} (Exp: {{ b.expiry_date }} &bull; {{ b.quantity_remaining }} in stock) [{{ b.expiry_label }}]
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quantity">Quantity Discarded <span style="color: var(--color-danger);">*</span></label>
+          <input type="number" id="quantity" name="quantity" class="form-control" min="1" step="1" required placeholder="e.g. 2">
+        </div>
+
+        <div class="form-group">
+          <label for="reason">Reason for Discard <span style="color: var(--color-danger);">*</span></label>
+          <select name="reason" id="reason" class="form-control" required>
+            <option value="EXPIRED">Expired Past Date</option>
+            <option value="DAMAGED_IN_STORE">Damaged / Broken in Store</option>
+            <option value="SPOILED">Spoiled / Packaging Compromised</option>
+            <option value="MISSING_AUDIT">Missing during Physical Audit</option>
+            <option value="CUSTOMER_RETURN">Defective Customer Return</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Details / Incident Description <span style="color: var(--color-danger);">*</span></label>
+        <textarea name="notes" id="notes" class="form-control" required placeholder="Describe what happened (e.g. Dropped from shelf, container seal torn)"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">Record Wastage & Deduct Stock</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

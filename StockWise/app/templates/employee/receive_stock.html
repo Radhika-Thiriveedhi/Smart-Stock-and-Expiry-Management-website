@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Record Incoming Delivery — StockWise{% endblock %}
+{% block page_title %}Store Employee / Record Incoming Delivery{% endblock %}
+
+{% block content %}
+<div style="max-width: 740px; margin: 0 auto;">
+  <div class="page-header">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <span class="badge badge-success font-mono">Stock Intake</span>
+      <span style="font-size: 12px; color: var(--text-light);">&bull; Batch Inventory Intake</span>
+    </div>
+    <h2>Record Incoming Delivery</h2>
+    <p class="greeting-text">Create a new inventory batch for incoming stock with its specific expiry date and wholesale purchase cost.</p>
+  </div>
+
+  <div class="form-card" style="box-shadow: var(--shadow-sm); border-radius: var(--radius-md);">
+    <form id="delivery-form" method="POST" action="{{ url_for('employee.receive_stock') }}">
+      <!-- Product Selection -->
+      <div class="form-group">
+        <label for="product_id">
+          <strong>1. Product Name</strong> <span style="color: var(--color-danger);">*</span>
+        </label>
+        <select name="product_id" id="product_id" class="form-control" required onchange="handleProductChange(this)">
+          <option value="">-- Select Product --</option>
+          {% for p in products %}
+            <option value="{{ p.id }}" data-price="{{ p.selling_price }}" data-unit="{{ p.unit }}">
+              {{ p.name }} ({{ p.sku }}) — {{ p.category_name }} [Retail: {{ p.selling_price|currency }}]
+            </option>
+          {% endfor %}
+        </select>
+        <div id="product-hint" class="form-hint" style="color: var(--brand-accent); font-weight: 500; display: none; margin-top: 4px;"></div>
+      </div>
+
+      <!-- Supplier Selection -->
+      <div class="form-group">
+        <label for="supplier_id">
+          <strong>2. Wholesale Supplier</strong> <span style="color: var(--color-danger);">*</span>
+        </label>
+        <select name="supplier_id" id="supplier_id" class="form-control" required>
+          <option value="">-- Select Supplier --</option>
+          {% for s in suppliers %}
+            <option value="{{ s.id }}">{{ s.name }} ({{ s.contact_person }} &bull; {{ s.phone }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Quantity and Cost Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="quantity">
+            <strong>3. Quantity Received</strong> <span style="color: var(--color-danger);">*</span>
+          </label>
+          <input type="number" id="quantity" name="quantity" class="form-control" min="1" step="1" required placeholder="e.g. 50" oninput="calculateTotalCost()">
+          <span id="quantity-unit-label" style="font-size: 11px; color: var(--text-light); margin-top: 2px; display: block;">Units count</span>
+        </div>
+
+        <div class="form-group">
+          <label for="unit_cost">
+            <strong>4. Unit Purchase Cost ({{ currency_symbol }})</strong> <span style="color: var(--color-danger);">*</span>
+          </label>
+          <input type="number" id="unit_cost" name="unit_cost" class="form-control" min="0" step="0.01" required placeholder="e.g. 24.50" oninput="calculateTotalCost()">
+          <span style="font-size: 11px; color: var(--text-light); margin-top: 2px; display: block;">Wholesale cost per single unit</span>
+        </div>
+      </div>
+
+      <!-- Total Investment Live Calculator Banner -->
+      <div style="background: var(--bg-app); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
+          Total Batch Cost:
+        </span>
+        <strong id="batch-total-cost" class="font-mono" style="font-size: 1.15rem; color: var(--brand-accent);">
+          {{ currency_symbol }}0.00
+        </strong>
+      </div>
+
+      <!-- Expiry Date with Presets -->
+      <div class="form-group">
+        <label for="expiry_date">
+          <strong>5. Batch Expiry Date</strong> <span style="color: var(--color-danger);">*</span>
+        </label>
+        <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+        <div class="form-hint" style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap;">
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Quick Expiry Presets:</span>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(7)">+7 Days</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(14)">+14 Days</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(30)">+30 Days (1 Month)</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(90)">+3 Months</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(180)">+6 Months</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setExpiry(365)">+1 Year</button>
+        </div>
+      </div>
+
+      <!-- Delivery Reference -->
+      <div class="form-group">
+        <label for="notes">Delivery Reference / Invoice Number / Delivery Note</label>
+        <input type="text" id="notes" name="notes" class="form-control" placeholder="e.g. Invoice #INV-8492, Morning delivery">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions" style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+        {% if session.get('role') == 'owner' %}
+          <a href="{{ url_for('owner.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        {% elif session.get('role') == 'manager' %}
+          <a href="{{ url_for('inventory.batches') }}" class="btn btn-secondary">Cancel</a>
+        {% else %}
+          <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+
+        <button type="submit" id="save-delivery-btn" class="btn btn-primary" style="font-weight: 700; padding: 10px 24px; font-size: 14px; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">
+          💾 Save Delivery Batch
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function setExpiry(days) {
+  const target = new Date();
+  target.setDate(target.getDate() + days);
+  const yyyy = target.getFullYear();
+  const mm = String(target.getMonth() + 1).padStart(2, '0');
+  const dd = String(target.getDate()).padStart(2, '0');
+  document.getElementById('expiry_date').value = `${yyyy}-${mm}-${dd}`;
+}
+
+function handleProductChange(select) {
+  const opt = select.options[select.selectedIndex];
+  if (!opt || !opt.value) {
+    document.getElementById('product-hint').style.display = 'none';
+    return;
+  }
+  const unit = opt.getAttribute('data-unit') || 'units';
+  const price = parseFloat(opt.getAttribute('data-price')) || 0;
+  
+  document.getElementById('quantity-unit-label').textContent = `In ${unit}s`;
+  
+  const unitCostInput = document.getElementById('unit_cost');
+  if (!unitCostInput.value && price > 0) {
+    // Suggest estimated wholesale purchase cost (e.g. 70% of retail price)
+    const suggestedCost = (price * 0.70).toFixed(2);
+    unitCostInput.value = suggestedCost;
+  }
+  
+  const hintEl = document.getElementById('product-hint');
+  hintEl.textContent = `✓ Selected: Retail Selling Price is {{ currency_symbol }}${price.toFixed(2)} per ${unit}.`;
+  hintEl.style.display = 'block';
+  
+  calculateTotalCost();
+}
+
+function calculateTotalCost() {
+  const qty = parseFloat(document.getElementById('quantity').value) || 0;
+  const cost = parseFloat(document.getElementById('unit_cost').value) || 0;
+  const total = (qty * cost).toFixed(2);
+  const currSym = '{{ currency_symbol }}';
+  document.getElementById('batch-total-cost').textContent = `${currSym}${parseFloat(total).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+}
+
+// Auto-fill default expiry date (+30 days) on page load if empty
+document.addEventListener('DOMContentLoaded', function() {
+  const expInput = document.getElementById('expiry_date');
+  if (expInput && !expInput.value) {
+    setExpiry(30);
+  }
+  
+  const form = document.getElementById('delivery-form');
+  const btn = document.getElementById('save-delivery-btn');
+  
+  if (form && btn) {
+    form.addEventListener('submit', function(e) {
+      const prod = document.getElementById('product_id').value;
+      const supp = document.getElementById('supplier_id').value;
+      const qty = parseFloat(document.getElementById('quantity').value);
+      const cost = parseFloat(document.getElementById('unit_cost').value);
+      const exp = document.getElementById('expiry_date').value;
+      
+      if (!prod || !supp || !qty || qty <= 0 || isNaN(cost) || cost < 0 || !exp) {
+        alert('Please fill in all required fields marked with * (Product, Supplier, Quantity, Cost, Expiry Date).');
+        e.preventDefault();
+        return false;
+      }
+      
+      // Safe visual feedback without aborting form submission
+      setTimeout(function() {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Saving Batch...';
+      }, 10);
+    });
+  }
+});
+</script>
+{% endblock %}

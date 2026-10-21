@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Expiry Alerts & Markdown Automation — StockWise{% endblock %}
+{% block page_title %}Expiry Monitoring & Clearance Markdowns{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Shelf-Life Expiry &amp; Clearance Markdowns</h2>
+      <p class="greeting-text">StockWise tracks each batch independently to eliminate food waste, suggest clearance markdowns, and safeguard margins.</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a href="{{ url_for('inventory.batches') }}" class="btn btn-secondary btn-sm">All Batches</a>
+      <a href="{{ url_for('inventory.audit') }}" class="btn btn-secondary btn-sm">Physical Stock Audit</a>
+    </div>
+  </div>
+</div>
+
+<!-- 1. Expired Batches (Immediate Action Required) -->
+<div style="margin-bottom: 30px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <h3 style="color: var(--color-danger); display: flex; align-items: center; gap: 8px;">
+      <span>Expired Stock (Locked From Sale)</span>
+      <span class="badge badge-danger">{{ expired|length }} batches</span>
+    </h3>
+  </div>
+
+  {% if expired %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Expired On</th>
+            <th>Quantity Remaining</th>
+            <th>Unit Cost</th>
+            <th>Financial Loss</th>
+            <th class="text-right">Disposal Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in expired %}
+            <tr>
+              <td class="font-mono"><strong>{{ b.id }}</strong></td>
+              <td>
+                <strong>{{ b.product_name }}</strong>
+                <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }} &bull; {{ b.supplier_name }}</div>
+              </td>
+              <td><span class="badge badge-danger">{{ b.expiry_label }} ({{ b.expiry_date }})</span></td>
+              <td><strong>{{ b.quantity_remaining }}</strong> {{ b.product_unit }}</td>
+              <td class="font-mono">{{ b.unit_cost|currency }}</td>
+              <td class="font-mono" style="color: var(--color-danger); font-weight: 700;">
+                {{ (b.quantity_remaining * b.unit_cost)|currency }}
+              </td>
+              <td class="text-right">
+                <form method="POST" action="{{ url_for('inventory.batch_discard', batch_id=b.id) }}" style="display:inline;">
+                  <input type="hidden" name="reason" value="EXPIRED">
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Discard all remaining expired units from {{ b.product_name }}?')">
+                    Discard &amp; Record Loss
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="background: var(--color-success-bg); border: 1px solid var(--color-success-border); padding: 14px 18px; border-radius: var(--radius-sm); font-size: 13px; color: var(--color-success); display: flex; align-items: center; gap: 8px;">
+      <span>✓</span>
+      <span>No expired stock in store. Shelves are fully compliant!</span>
+    </div>
+  {% endif %}
+</div>
+
+<!-- 2. Critical Near-Expiry (<= 3 Days) with Automated Clearance Markdown -->
+<div style="margin-bottom: 30px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <h3 style="color: var(--color-warning); display: flex; align-items: center; gap: 8px;">
+      <span>Critical Expiry Window (&le; 3 Days) &mdash; Suggested Clearance Markdowns</span>
+      <span class="badge badge-warning">{{ critical|length }}</span>
+    </h3>
+  </div>
+
+  {% if critical %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Expiry Date</th>
+            <th>Days Left</th>
+            <th>Units at Risk</th>
+            <th>Capital at Risk</th>
+            <th>Yellow Sticker Markdown (Suggested)</th>
+            <th class="text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in critical %}
+            <tr>
+              <td class="font-mono"><strong>{{ b.id }}</strong></td>
+              <td>
+                <strong>{{ b.product_name }}</strong>
+                <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }}</div>
+              </td>
+              <td class="font-mono">{{ b.expiry_date }}</td>
+              <td><span class="badge badge-danger">{{ b.expiry_label }}</span></td>
+              <td><strong>{{ b.quantity_remaining }}</strong> {{ b.product_unit }}</td>
+              <td class="font-mono">{{ (b.quantity_remaining * b.unit_cost)|currency }}</td>
+              <td>
+                <!-- Automated Markdown Suggestion Pill -->
+                <span class="badge badge-warning" style="font-size: 11.5px; padding: 4px 8px;">
+                  ⚡ Suggest 50% Off to Clear
+                </span>
+              </td>
+              <td class="text-right">
+                <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-primary btn-sm">
+                  Sell First (FEFO) &rarr;
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="font-size: 13px; color: var(--text-muted);">No batches expiring within the next 3 days.</p>
+  {% endif %}
+</div>
+
+<!-- 3. Warning (4 to 7 Days) -->
+<div>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+    <h3 style="display: flex; align-items: center; gap: 8px;">
+      <span>Expiring Within 7 Days</span>
+      <span class="badge badge-info">{{ warning|length }}</span>
+    </h3>
+  </div>
+
+  {% if warning %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Batch ID</th>
+            <th>Product</th>
+            <th>Expiry Date</th>
+            <th>Days Left</th>
+            <th>Units Available</th>
+            <th>Cost Basis</th>
+            <th>Recommended Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in warning %}
+            <tr>
+              <td class="font-mono">{{ b.id }}</td>
+              <td><strong>{{ b.product_name }}</strong></td>
+              <td class="font-mono">{{ b.expiry_date }}</td>
+              <td><span class="badge badge-warning">{{ b.expiry_label }}</span></td>
+              <td>{{ b.quantity_remaining }} {{ b.product_unit }}</td>
+              <td class="font-mono">{{ (b.quantity_remaining * b.unit_cost)|currency }}</td>
+              <td><span class="badge badge-muted">Front-face on shelf for FEFO priority</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="font-size: 13px; color: var(--text-muted);">No batches expiring within 7 days.</p>
+  {% endif %}
+</div>
+{% endblock %}

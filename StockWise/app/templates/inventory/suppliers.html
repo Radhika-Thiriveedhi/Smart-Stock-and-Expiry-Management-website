@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers — StockWise{% endblock %}
+{% block page_title %}Suppliers Directory{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Supplier Directory</h2>
+      <p class="greeting-text">Registered vendors and distributors supplying store inventory.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-grid">
+  <!-- Suppliers List -->
+  <div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Supplier Name</th>
+            <th>Contact Person</th>
+            <th>Phone / Email</th>
+            <th>Lead Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in suppliers %}
+            <tr>
+              <td>
+                <strong>{{ s.name }}</strong>
+                <div class="font-mono" style="font-size: 11px; color: var(--text-light);">{{ s.id }}</div>
+              </td>
+              <td>{{ s.contact_person }}</td>
+              <td>
+                <div>{{ s.phone }}</div>
+                <div style="font-size: 11px; color: var(--text-light);">{{ s.email }}</div>
+              </td>
+              <td>{{ s.lead_time_days }} days</td>
+              <td>
+                {% if s.active %}
+                  <span class="badge badge-success">Active</span>
+                {% else %}
+                  <span class="badge badge-muted">Inactive</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Supplier Form -->
+  <div class="form-card" style="height: fit-content;">
+    <h3 style="margin-bottom: 14px;">Add New Supplier</h3>
+    <form method="POST" action="{{ url_for('inventory.suppliers') }}">
+      <div class="form-group">
+        <label for="name">Company / Supplier Name <span style="color: var(--color-danger);">*</span></label>
+        <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. Apex Farm Fresh Ltd">
+      </div>
+
+      <div class="form-group">
+        <label for="contact_person">Contact Representative <span style="color: var(--color-danger);">*</span></label>
+        <input type="text" id="contact_person" name="contact_person" class="form-control" required placeholder="e.g. James Wilson">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Phone Number <span style="color: var(--color-danger);">*</span></label>
+          <input type="text" id="phone" name="phone" class="form-control" required placeholder="+1 (555) 000-0000">
+        </div>
+
+        <div class="form-group">
+          <label for="lead_time_days">Lead Time (Days)</label>
+          <input type="number" id="lead_time_days" name="lead_time_days" class="form-control" value="2" min="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Orders Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="orders@supplier.com">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Supplier</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

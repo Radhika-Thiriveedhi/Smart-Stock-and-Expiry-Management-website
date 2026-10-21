@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Smart POS Terminal — StockWise{% endblock %}
+{% block page_title %}Store Employee / Advanced POS Terminal{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 18px;">
+  <div class="page-header-row">
+    <div>
+      <h2>Smart POS Checkout Terminal</h2>
+      <p class="greeting-text">Automated FEFO batch allocation. Select or scan items to add directly to cart.</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- FEFO Protection Indicator -->
+<div style="background: var(--color-success-bg); border: 1px solid var(--color-success-border); border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; font-size: 12.5px;">
+  <div style="display: flex; align-items: center; gap: 8px; color: var(--color-success); font-weight: 600;">
+    <span style="font-size: 14px;">🛡️</span>
+    <span>FEFO Engine Active: Items are automatically deducted from the earliest-expiring non-expired batches first.</span>
+  </div>
+  <span class="badge badge-success">Zero Expired Goods Sold</span>
+</div>
+
+<!-- Modern Split POS Terminal Layout -->
+<div style="display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: flex-start;">
+
+  <!-- Left Column: Product Selection & Barcode Scanner -->
+  <div>
+    <!-- Barcode Quick-Scan Simulation Bar -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 16px; box-shadow: var(--shadow-xs);">
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span style="font-size: 16px;">📷</span>
+        <input type="text" id="barcode-scan-input" placeholder="Scan Barcode / Enter SKU (e.g. MILK-500, YOGURT-200)..." class="form-control" style="font-family: var(--font-mono); font-size: 13px;">
+        <button type="button" id="barcode-scan-btn" class="btn btn-primary btn-sm">Scan SKU</button>
+      </div>
+      <div style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap;">
+        <span style="font-size: 11px; color: var(--text-light);">Quick Test Barcodes:</span>
+        <button type="button" class="btn btn-secondary btn-sm" style="font-size: 10.5px; padding: 2px 7px;" onclick="simulateBarcode('MILK-500')">MILK-500</button>
+        <button type="button" class="btn btn-secondary btn-sm" style="font-size: 10.5px; padding: 2px 7px;" onclick="simulateBarcode('YOGURT-200')">YOGURT-200</button>
+        <button type="button" class="btn btn-secondary btn-sm" style="font-size: 10.5px; padding: 2px 7px;" onclick="simulateBarcode('BREAD-SOUR')">BREAD-SOUR</button>
+        <button type="button" class="btn btn-secondary btn-sm" style="font-size: 10.5px; padding: 2px 7px;" onclick="simulateBarcode('JUICE-ORANGE')">JUICE-ORANGE</button>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills & Search -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
+      <div id="category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;">
+        <button type="button" class="btn btn-primary btn-sm cat-pill active" data-cat="all">All Items</button>
+        <button type="button" class="btn btn-secondary btn-sm cat-pill" data-cat="Dairy & Eggs">Dairy</button>
+        <button type="button" class="btn btn-secondary btn-sm cat-pill" data-cat="Bakery">Bakery</button>
+        <button type="button" class="btn btn-secondary btn-sm cat-pill" data-cat="Beverages">Beverages</button>
+        <button type="button" class="btn btn-secondary btn-sm cat-pill" data-cat="Pantry & Staples">Pantry</button>
+        <button type="button" class="btn btn-secondary btn-sm cat-pill" data-cat="Snacks & Confectionery">Snacks</button>
+      </div>
+      <input type="text" id="pos-product-search" placeholder="Filter items..." class="form-control" style="max-width: 170px; padding: 5px 10px; font-size: 12px;">
+    </div>
+
+    <!-- Products Grid -->
+    <div id="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; max-height: 520px; overflow-y: auto; padding-right: 4px;">
+      {% for p in products %}
+        <div class="product-item-card" 
+             data-id="{{ p.product_id }}"
+             data-sku="{{ p.sku }}"
+             data-name="{{ p.name }}"
+             data-price="{{ p.selling_price }}"
+             data-stock="{{ p.saleable_quantity }}"
+             data-unit="{{ p.unit }}"
+             data-category="{{ p.category_name }}"
+             onclick="addToCart('{{ p.product_id }}', '{{ p.name|escape }}', '{{ p.sku }}', {{ p.selling_price }}, {{ p.saleable_quantity }})"
+             style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 14px; cursor: pointer; transition: all 0.15s ease; box-shadow: var(--shadow-xs); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+              <span class="badge badge-muted font-mono" style="font-size: 10px;">{{ p.sku }}</span>
+              <span class="badge {% if p.saleable_quantity <= 5 %}badge-danger{% else %}badge-success{% endif %}" style="font-size: 10px;">
+                {{ p.saleable_quantity }} {{ p.unit }}
+              </span>
+            </div>
+            <h4 style="font-size: 13.5px; margin-bottom: 4px; color: var(--text-main); font-weight: 600;">{{ p.name }}</h4>
+            <div style="font-size: 11px; color: var(--text-light);">{{ p.category_name }}</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+            <strong class="font-mono" style="font-size: 15px; color: var(--brand-accent);">{{ p.selling_price|currency }}</strong>
+            <span class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;">+ Add</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Right Column: Interactive Cart & Checkout -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm); position: sticky; top: 80px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+      <h3 style="font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+        <span>Cart</span>
+        <span id="cart-item-count" class="badge badge-info">0 items</span>
+      </h3>
+      <button type="button" onclick="clearCart()" class="btn btn-secondary btn-sm" style="font-size: 11px;">Clear All</button>
+    </div>
+
+    <!-- Actual Submission Form -->
+    <form method="POST" action="{{ url_for('employee.record_sale_view') }}" id="pos-checkout-form">
+      <!-- Container for dynamic items in cart -->
+      <div id="cart-items-container" style="max-height: 240px; overflow-y: auto; margin-bottom: 16px;">
+        <div id="cart-empty-message" style="padding: 30px 10px; text-align: center; color: var(--text-muted); font-size: 13px;">
+          Cart is empty.<br>Click any item or scan a barcode to add.
+        </div>
+      </div>
+
+      <!-- Financial Calculation Summary -->
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span class="text-muted">Subtotal:</span>
+          <span id="pos-subtotal" class="font-mono">$0.00</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span class="text-muted">Discount:</span>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <select id="discount-type" style="padding: 2px 4px; font-size: 11px; border: 1px solid var(--border-color); border-radius: var(--radius-xs); background: #ffffff;">
+              <option value="percent">% Off</option>
+              <option value="flat">$ Off</option>
+            </select>
+            <input type="number" id="discount-val" value="0" min="0" step="1" style="width: 50px; padding: 2px 4px; font-size: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-xs);" class="font-mono">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 700; color: var(--text-main); border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 6px;">
+          <span>Net Total:</span>
+          <span id="pos-grand-total" class="font-mono" style="color: var(--brand-accent);">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Payment Method & Cash Tender Calculator -->
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label for="payment_method" style="font-size: 12px;">Payment Method</label>
+        <select name="payment_method" id="payment_method" class="form-control" style="padding: 6px 10px; font-size: 13px;">
+          <option value="CASH">Cash Tender</option>
+          <option value="CARD">Credit / Debit Card</option>
+          <option value="UPI / DIGITAL">UPI / Digital Wallet</option>
+          <option value="STORE_CREDIT">Store Account</option>
+        </select>
+      </div>
+
+      <div id="cash-tender-row" class="form-row" style="margin-bottom: 14px;">
+        <div class="form-group">
+          <label for="cash-received" style="font-size: 12px;">Cash Received ($)</label>
+          <input type="number" id="cash-received" class="form-control font-mono" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label style="font-size: 12px;">Change to Return</label>
+          <div id="cash-change" class="font-mono" style="padding: 7px 10px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-xs); font-weight: 700; color: var(--color-success); font-size: 14px;">
+            $0.00
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <input type="text" name="notes" id="notes" class="form-control" placeholder="Transaction note / customer memo..." style="font-size: 12px; padding: 6px 10px;">
+      </div>
+
+      <button type="submit" id="complete-sale-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px;" disabled>
+        Complete Sale &amp; Print Receipt
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+// State Management
+let cart = {}; // { productId: { name, sku, price, stock, quantity } }
+
+function addToCart(id, name, sku, price, maxStock) {
+  if (cart[id]) {
+    if (cart[id].quantity < maxStock) {
+      cart[id].quantity += 1;
+    } else {
+      alert(`Cannot add more. Only ${maxStock} units available in non-expired batches.`);
+    }
+  } else {
+    if (maxStock <= 0) {
+      alert("This item is out of stock in valid batches.");
+      return;
+    }
+    cart[id] = { name, sku, price: parseFloat(price), stock: parseInt(maxStock), quantity: 1 };
+  }
+  renderCart();
+}
+
+function updateQty(id, delta) {
+  if (!cart[id]) return;
+  const newQty = cart[id].quantity + delta;
+  if (newQty <= 0) {
+    delete cart[id];
+  } else if (newQty > cart[id].stock) {
+    alert(`Only ${cart[id].stock} units available.`);
+  } else {
+    cart[id].quantity = newQty;
+  }
+  renderCart();
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  renderCart();
+}
+
+function clearCart() {
+  cart = {};
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById("cart-items-container");
+  const countBadge = document.getElementById("cart-item-count");
+  const completeBtn = document.getElementById("complete-sale-btn");
+  const emptyMsg = document.getElementById("cart-empty-message");
+
+  const keys = Object.keys(cart);
+  countBadge.textContent = `${keys.length} item${keys.length === 1 ? '' : 's'}`;
+
+  if (keys.length === 0) {
+    container.innerHTML = '<div id="cart-empty-message" style="padding: 30px 10px; text-align: center; color: var(--text-muted); font-size: 13px;">Cart is empty.<br>Click any item or scan a barcode to add.</div>';
+    completeBtn.disabled = true;
+    recalculateTotals();
+    return;
+  }
+
+  completeBtn.disabled = false;
+  let html = "";
+  keys.forEach(id => {
+    const item = cart[id];
+    const sub = item.quantity * item.price;
+    html += `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); font-size: 13px;">
+        <input type="hidden" name="product_id[]" value="${id}">
+        <input type="hidden" name="quantity[]" value="${item.quantity}">
+        <div style="flex: 1; min-width: 0; padding-right: 8px;">
+          <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
+          <div style="font-size: 11px; color: var(--text-light); font-family: var(--font-mono);">$${item.price.toFixed(2)} &bull; ${item.sku}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 7px;" onclick="updateQty('${id}', -1)">-</button>
+          <span class="font-mono" style="font-weight: 600; min-width: 20px; text-align: center;">${item.quantity}</span>
+          <button type="button" class="btn btn-secondary btn-sm" style="padding: 2px 7px;" onclick="updateQty('${id}', 1)">+</button>
+        </div>
+        <div style="width: 70px; text-align: right; font-weight: 600;" class="font-mono">
+          $${sub.toFixed(2)}
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm" style="padding: 2px 6px; margin-left: 6px;" onclick="removeFromCart('${id}')">&times;</button>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+  recalculateTotals();
+}
+
+function recalculateTotals() {
+  let subtotal = 0;
+  Object.values(cart).forEach(item => {
+    subtotal += item.quantity * item.price;
+  });
+
+  document.getElementById("pos-subtotal").textContent = `$${subtotal.toFixed(2)}`;
+
+  const discType = document.getElementById("discount-type").value;
+  const discVal = parseFloat(document.getElementById("discount-val").value) || 0;
+  let discountAmount = 0;
+
+  if (discType === "percent") {
+    discountAmount = (subtotal * discVal) / 100;
+  } else {
+    discountAmount = Math.min(discVal, subtotal);
+  }
+
+  const grandTotal = Math.max(0, subtotal - discountAmount);
+  document.getElementById("pos-grand-total").textContent = `$${grandTotal.toFixed(2)}`;
+
+  // Update Change Return
+  const cashRec = parseFloat(document.getElementById("cash-received").value) || 0;
+  const changeEl = document.getElementById("cash-change");
+  if (cashRec > 0) {
+    const diff = cashRec - grandTotal;
+    changeEl.textContent = `$${Math.max(0, diff).toFixed(2)}`;
+    changeEl.style.color = diff >= 0 ? "var(--color-success)" : "var(--color-danger)";
+  } else {
+    changeEl.textContent = "$0.00";
+    changeEl.style.color = "var(--text-main)";
+  }
+}
+
+document.getElementById("discount-type").addEventListener("change", recalculateTotals);
+document.getElementById("discount-val").addEventListener("input", recalculateTotals);
+document.getElementById("cash-received").addEventListener("input", recalculateTotals);
+
+// Barcode Scanning Simulation
+function simulateBarcode(sku) {
+  const card = document.querySelector(`.product-item-card[data-sku='${sku}']`);
+  if (card) {
+    card.click();
+    card.style.transform = "scale(1.03)";
+    setTimeout(() => card.style.transform = "", 150);
+  } else {
+    alert(`SKU ${sku} not found.`);
+  }
+}
+
+document.getElementById("barcode-scan-btn").addEventListener("click", function () {
+  const input = document.getElementById("barcode-scan-input");
+  const val = input.value.trim().toUpperCase();
+  if (!val) return;
+  simulateBarcode(val);
+  input.value = "";
+});
+
+document.getElementById("barcode-scan-input").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("barcode-scan-btn").click();
+  }
+});
+
+// Category filtering pills
+document.querySelectorAll(".cat-pill").forEach(pill => {
+  pill.addEventListener("click", function () {
+    document.querySelectorAll(".cat-pill").forEach(p => {
+      p.classList.remove("active");
+      p.className = "btn btn-secondary btn-sm cat-pill";
+    });
+    this.className = "btn btn-primary btn-sm cat-pill active";
+
+    const cat = this.getAttribute("data-cat");
+    const cards = document.querySelectorAll(".product-item-card");
+    cards.forEach(card => {
+      if (cat === "all" || card.getAttribute("data-category") === cat) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+});
+
+// Live product filter
+document.getElementById("pos-product-search").addEventListener("input", function () {
+  const query = this.value.toLowerCase().trim();
+  const cards = document.querySelectorAll(".product-item-card");
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(query) ? "" : "none";
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Movements — StockWise{% endblock %}
+{% block page_title %}Stock Movement History{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Complete Stock Movement History</h2>
+      <p class="greeting-text">Audit trail of every delivery, customer sale, stock discard, and quantity adjustment.</p>
+    </div>
+    <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div style="display: flex; gap: 8px;">
+    <a href="{{ url_for('employee.movements') }}" class="btn btn-sm {% if not current_type %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+    <a href="{{ url_for('employee.movements', type='RECEIVE') }}" class="btn btn-sm {% if current_type == 'RECEIVE' %}btn-primary{% else %}btn-secondary{% endif %}">Deliveries</a>
+    <a href="{{ url_for('employee.movements', type='SALE') }}" class="btn btn-sm {% if current_type == 'SALE' %}btn-primary{% else %}btn-secondary{% endif %}">Sales</a>
+    <a href="{{ url_for('employee.movements', type='WASTE') }}" class="btn btn-sm {% if current_type == 'WASTE' %}btn-primary{% else %}btn-secondary{% endif %}">Waste / Damage</a>
+  </div>
+
+  <input type="text" placeholder="Search movements..." data-table-search="movement-table" class="form-control search-input" style="max-width: 250px;">
+</div>
+
+<div class="table-responsive">
+  <table class="data-table" id="movement-table">
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Movement Type</th>
+        <th>Product</th>
+        <th>Batch ID</th>
+        <th>Quantity</th>
+        <th>Reason / Reference</th>
+        <th>Logged By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in movements %}
+        <tr>
+          <td class="font-mono" style="font-size: 12px;">{{ m.created_at|datetime_format }}</td>
+          <td>
+            {% if m.type == 'RECEIVE' %}
+              <span class="badge badge-info">Receive</span>
+            {% elif m.type == 'SALE' %}
+              <span class="badge badge-success">Sale</span>
+            {% elif m.type == 'WASTE' %}
+              <span class="badge badge-danger">Waste</span>
+            {% else %}
+              <span class="badge badge-muted">{{ m.type }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ m.product_name }}</strong>
+            <div style="font-size: 11px; color: var(--text-light);">{{ m.product_sku }}</div>
+          </td>
+          <td><span class="font-mono">{{ m.batch_id }}</span></td>
+          <td>
+            <strong {% if m.type in ['SALE', 'WASTE'] %}style="color: var(--color-danger);"{% else %}style="color: var(--color-success);"{% endif %}>
+              {% if m.type in ['SALE', 'WASTE'] %}-{% else %}+{% endif %}{{ m.quantity }}
+            </strong>
+          </td>
+          <td>
+            <div>{{ m.reason }}</div>
+            {% if m.reference_id %}
+              <div style="font-size: 11px; color: var(--text-light);">Ref: {{ m.reference_id }}</div>
+            {% endif %}
+          </td>
+          <td>{{ m.user_name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

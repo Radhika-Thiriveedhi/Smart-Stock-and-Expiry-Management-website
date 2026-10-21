@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Sales & Margins Report — StockWise{% endblock %}
+{% block page_title %}Executive Sales & Profit Report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Sales &amp; Gross Profit Analysis</h2>
+      <p class="greeting-text">Daily, weekly, and monthly performance. Tracks daily money in, wholesale purchase costs (COGS), gross profits, wastage losses, and true net earnings.</p>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <a href="{{ url_for('reports.export_daily_pnl') }}" class="btn btn-secondary btn-sm">📥 Download Daily P&amp;L CSV</a>
+      <a href="{{ url_for('reports.export_sales') }}" class="btn btn-primary btn-sm">📥 Download Transactions CSV</a>
+    </div>
+  </div>
+</div>
+
+<div class="metrics-grid">
+  <!-- Today's Money Received -->
+  <div class="metric-card">
+    <div class="metric-title">Today's Money Received</div>
+    <div class="metric-value font-mono">{{ analytics.today_pnl.revenue|currency }}</div>
+    <div class="metric-footer" style="color: var(--color-success); font-weight: 600;">
+      Gross Profit: +{{ analytics.today_pnl.gross_profit|currency }} &bull; Loss: -{{ analytics.today_pnl.loss|currency }}
+    </div>
+  </div>
+
+  <!-- Today's Net Balance -->
+  <div class="metric-card {% if analytics.today_pnl.net_profit > 0 %}success{% elif analytics.today_pnl.net_profit < 0 %}danger{% endif %}">
+    <div class="metric-title">Today's Net Profit / (Loss)</div>
+    <div class="metric-value font-mono" style="color: {% if analytics.today_pnl.net_profit >= 0 %}var(--color-success){% else %}var(--color-danger){% endif %};">
+      {% if analytics.today_pnl.net_profit > 0 %}+{% endif %}{{ analytics.today_pnl.net_profit|currency }}
+    </div>
+    <div class="metric-footer">Net profit after today's wastage/expiry deductions</div>
+  </div>
+
+  <!-- This Month's Net Balance -->
+  <div class="metric-card">
+    <div class="metric-title">This Month's Sales</div>
+    <div class="metric-value font-mono">{{ analytics.month_sales|currency }}</div>
+    <div class="metric-footer" style="color: var(--color-success); font-weight: 600;">
+      Net Earnings: {{ analytics.month_pnl.net_profit|currency }} ({{ analytics.month_orders }} orders)
+    </div>
+  </div>
+
+  <!-- All-Time Turnover -->
+  <div class="metric-card">
+    <div class="metric-title">Total All-Time Revenue</div>
+    <div class="metric-value font-mono">{{ analytics.total_sales|currency }}</div>
+    <div class="metric-footer">Gross Margin: +{{ analytics.total_profit|currency }}</div>
+  </div>
+</div>
+
+<!-- Day-by-Day Historical P&L Breakdown Table -->
+<div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-xs);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+    <div>
+      <h3 style="margin: 0; font-size: 15px;">📅 Day-by-Day Financial Breakdown (Money In, Profit &amp; Loss)</h3>
+      <p style="font-size: 12px; color: var(--text-light); margin: 3px 0 0 0;">Historical daily accounting statement comparing gross sales, product wholesale costs, gross profit, wastage write-offs, and final net profit.</p>
+    </div>
+    <a href="{{ url_for('reports.export_daily_pnl') }}" class="btn btn-secondary btn-sm">Export Daily P&amp;L CSV</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date &amp; Day</th>
+          <th>Orders</th>
+          <th>Money In (Revenue)</th>
+          <th>Wholesale Cost (COGS)</th>
+          <th>Gross Profit</th>
+          <th>Margin %</th>
+          <th>Loss (Wastage/Expiry)</th>
+          <th>Net Real Profit</th>
+          <th class="text-right">Daily Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in analytics.daily_ledger %}
+          <tr style="{% if row.is_today %}background: rgba(120, 71, 37, 0.05); font-weight: 500;{% endif %}">
+            <td>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                {% if row.is_today %}
+                  <span class="badge badge-primary font-mono" style="font-size: 10px; padding: 1px 6px;">TODAY</span>
+                {% elif row.is_yesterday %}
+                  <span class="badge badge-muted font-mono" style="font-size: 10px; padding: 1px 6px;">YESTERDAY</span>
+                {% endif %}
+                <strong>{{ row.label }}</strong>
+              </div>
+              <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">{{ row.formatted_date }}</div>
+            </td>
+            <td>
+              {% if row.orders > 0 %}
+                <span class="badge badge-muted font-mono">{{ row.orders }} order{% if row.orders != 1 %}s{% endif %}</span>
+              {% else %}
+                <span style="color: var(--text-light); font-size: 11px;">0 orders</span>
+              {% endif %}
+            </td>
+            <td class="font-mono"><strong>{{ row.revenue|currency }}</strong></td>
+            <td class="font-mono" style="color: var(--text-muted);">{{ row.cogs|currency }}</td>
+            <td class="font-mono" style="font-weight: 600; color: {% if row.gross_profit > 0 %}var(--color-success){% else %}var(--text-light){% endif %};">
+              {% if row.gross_profit > 0 %}+{% endif %}{{ row.gross_profit|currency }}
+            </td>
+            <td class="font-mono" style="font-size: 12px; color: {% if row.margin_pct > 0 %}var(--color-success){% else %}var(--text-light){% endif %};">
+              {{ row.margin_pct }}%
+            </td>
+            <td class="font-mono" style="font-weight: 600; color: {% if row.loss > 0 %}var(--color-danger){% else %}var(--text-light){% endif %};">
+              {% if row.loss > 0 %}
+                -{{ row.loss|currency }}
+                <div style="font-size: 10.5px; color: var(--color-danger); font-weight: normal;">
+                  {{ row.waste_units }} unit(s) ({{ row.waste_reasons_summary }})
+                </div>
+              {% else %}
+                $0.00
+              {% endif %}
+            </td>
+            <td class="font-mono" style="font-size: 13.5px; font-weight: 800; color: {% if row.net_profit > 0 %}var(--color-success){% elif row.net_profit < 0 %}var(--color-danger){% else %}var(--text-light){% endif %};">
+              {% if row.net_profit > 0 %}+{% endif %}{{ row.net_profit|currency }}
+            </td>
+            <td class="text-right">
+              {% if row.status == 'PROFIT' %}
+                <span class="badge badge-success font-mono" style="font-size: 11px;">🟢 Profitable (+{{ row.net_profit|currency }})</span>
+              {% elif row.status == 'LOSS' %}
+                <span class="badge badge-danger font-mono" style="font-size: 11px;">🔴 Loss (-{{ (row.net_profit|abs)|currency }})</span>
+              {% elif row.status == 'BREAK_EVEN' %}
+                <span class="badge badge-warning font-mono" style="font-size: 11px;">🟡 Break-Even</span>
+              {% else %}
+                <span class="badge badge-muted font-mono" style="font-size: 10.5px;">⚪ No Activity</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Transactions Table -->
+<div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+    <h3>Customer Transactions History</h3>
+    <input type="text" placeholder="Search receipt..." data-table-search="sales-history-table" class="form-control" style="width: 200px; padding: 4px 8px; font-size: 12px;">
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table" id="sales-history-table">
+      <thead>
+        <tr>
+          <th>Receipt No</th>
+          <th>Date & Time</th>
+          <th>Cashier</th>
+          <th>Items Summary</th>
+          <th>Payment</th>
+          <th>Cost of Goods</th>
+          <th>Gross Profit</th>
+          <th class="text-right">Total Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sales_list %}
+          <tr>
+            <td class="font-mono">
+              <a href="{{ url_for('employee.view_receipt', sale_id=s.id) }}"><strong>{{ s.receipt_no }}</strong></a>
+            </td>
+            <td class="font-mono" style="font-size: 12px;">{{ s.created_at|datetime_format }}</td>
+            <td>{{ s.cashier_name }}</td>
+            <td>
+              <div>{{ s.items|length }} line item(s)</div>
+              <div style="font-size: 11px; color: var(--text-light);">
+                {% for item in s.items[:2] %}
+                  {{ item.product_name }} ({{ item.quantity }}){% if not loop.last %}, {% endif %}
+                {% endfor %}
+                {% if s.items|length > 2 %}...{% endif %}
+              </div>
+            </td>
+            <td><span class="badge badge-muted">{{ s.payment_method }}</span></td>
+            <td class="font-mono">{{ s.total_cost|currency }}</td>
+            <td class="font-mono" style="color: var(--color-success); font-weight: 600;">+{{ s.gross_profit|currency }}</td>
+            <td class="text-right font-mono"><strong>{{ s.total_amount|currency }}</strong></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

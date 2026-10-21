@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}StockWise{% endblock %} — Smart Stock & Expiry Management</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Top Demo Switcher & Theme Selector Header -->
+  <div class="demo-banner">
+    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <span class="demo-banner-title">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #38bdf8;"></span>
+        <strong>Role Switcher:</strong>
+      </span>
+      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <a href="{{ url_for('public.demo_login', role='employee') }}" 
+           class="demo-pill {% if session.get('role') == 'employee' %}active{% endif %}"
+           title="Shop floor, sales, receiving, and expiry checks">
+          1. Store Employee (Cashier)
+        </a>
+        <a href="{{ url_for('public.demo_login', role='manager') }}" 
+           class="demo-pill {% if session.get('role') == 'manager' %}active{% endif %}"
+           title="Stock batches, reorders, suppliers & POs">
+          2. Inventory Manager
+        </a>
+        <a href="{{ url_for('public.demo_login', role='owner') }}" 
+           class="demo-pill {% if session.get('role') == 'owner' %}active{% endif %}"
+           title="Sales profit, COGS, inventory valuation & staff">
+          3. Business Owner
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Controls: Theme Selector & Search -->
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <!-- Interactive Theme Selector Group -->
+      <div style="display: inline-flex; background: rgba(255,255,255,0.06); padding: 2px; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.12); align-items: center;">
+        <span style="font-size: 10.5px; color: #d6c7b7; padding: 0 8px; font-weight: 600;">Theme:</span>
+        <a href="#" class="theme-selector-pill demo-pill" data-set-theme="brown" title="Warm Light Brown Retail Theme" style="padding: 2px 8px; font-size: 11px;">
+          🍂 Light Brown
+        </a>
+        <a href="#" class="theme-selector-pill demo-pill" data-set-theme="emerald" title="Emerald Fresh Retail Theme" style="padding: 2px 8px; font-size: 11px;">
+          🟢 Emerald
+        </a>
+        <a href="#" class="theme-selector-pill demo-pill" data-set-theme="sapphire" title="Sapphire FinTech Blue Theme" style="padding: 2px 8px; font-size: 11px;">
+          🔵 Sapphire
+        </a>
+        <a href="#" class="theme-selector-pill demo-pill" data-set-theme="dark" title="Obsidian Cyber Dark Mode" style="padding: 2px 8px; font-size: 11px;">
+          🌙 Obsidian
+        </a>
+      </div>
+
+      {% if session.get('user_id') %}
+        <span style="color: #94a3b8; font-size: 11px;">
+          <strong style="color: #ffffff;">{{ session.get('name') }}</strong> ({{ session.get('role')|capitalize }})
+        </span>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" style="color: #38bdf8; font-weight: 600; text-decoration: underline; font-size: 11.5px;">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+    {% if session.get('user_id') %}
+    <!-- Horizontal Top Menubar (Replaces Left Sidebar) -->
+    <nav class="app-menubar">
+      <div class="menubar-container">
+        <div class="menubar-left">
+          <a href="{{ url_for('public.home') }}" class="brand-title">
+            <div class="brand-icon">S</div>
+            <span>StockWise</span>
+            <span class="brand-badge">{{ session.get('role') }}</span>
+          </a>
+
+          <!-- Horizontal Navigation Menu -->
+          <div class="menubar-nav">
+            {% if session.get('role') == 'owner' %}
+              <a href="{{ url_for('owner.dashboard') }}" class="menubar-link {% if request.path == '/owner/dashboard' %}active{% endif %}">
+                <span>📊 Overview</span>
+              </a>
+              <a href="{{ url_for('owner.sales_report') }}" class="menubar-link {% if request.path == '/owner/sales-report' %}active{% endif %}">
+                <span>💰 Sales &amp; Margin</span>
+              </a>
+              <a href="{{ url_for('owner.inventory_report') }}" class="menubar-link {% if request.path == '/owner/inventory-report' %}active{% endif %}">
+                <span>📦 Inventory Valuation</span>
+              </a>
+              <a href="{{ url_for('owner.waste_report') }}" class="menubar-link {% if request.path == '/owner/waste-report' %}active{% endif %}">
+                <span>🗑️ Wastage &amp; Loss</span>
+              </a>
+              <a href="{{ url_for('owner.staff') }}" class="menubar-link {% if request.path == '/owner/staff' %}active{% endif %}">
+                <span>👥 Staff</span>
+              </a>
+              <a href="{{ url_for('owner.settings') }}" class="menubar-link {% if request.path == '/owner/settings' %}active{% endif %}">
+                <span>⚙️ Settings</span>
+              </a>
+              <a href="{{ url_for('reports.export_sales') }}" class="menubar-link" title="Export Sales CSV dataset">
+                <span>📥 Sales CSV</span>
+              </a>
+              <a href="{{ url_for('reports.export_inventory') }}" class="menubar-link" title="Export Stock CSV dataset">
+                <span>📥 Stock CSV</span>
+              </a>
+
+            {% elif session.get('role') == 'manager' %}
+              <a href="{{ url_for('inventory.dashboard') }}" class="menubar-link {% if request.path == '/inventory/dashboard' %}active{% endif %}">
+                <span>📊 Dashboard</span>
+              </a>
+              <a href="{{ url_for('inventory.products') }}" class="menubar-link {% if '/inventory/products' in request.path %}active{% endif %}">
+                <span>🏷️ Products</span>
+              </a>
+              <a href="{{ url_for('inventory.batches') }}" class="menubar-link {% if '/inventory/batches' in request.path %}active{% endif %}">
+                <span>📦 Stock Batches</span>
+              </a>
+              <a href="{{ url_for('inventory.expiry_alerts') }}" class="menubar-link {% if request.path == '/inventory/expiry-alerts' %}active{% endif %}">
+                <span>⏳ Expiry &amp; Markdowns</span>
+              </a>
+              <a href="{{ url_for('inventory.low_stock') }}" class="menubar-link {% if request.path == '/inventory/low-stock' %}active{% endif %}">
+                <span>🔔 Low Stock</span>
+              </a>
+              <a href="{{ url_for('inventory.audit') }}" class="menubar-link {% if request.path == '/inventory/audit' %}active{% endif %}">
+                <span>📋 Stock Audit</span>
+              </a>
+              <a href="{{ url_for('purchases.index') }}" class="menubar-link {% if '/inventory/purchase-orders' in request.path %}active{% endif %}">
+                <span>🚚 Purchase Orders</span>
+              </a>
+              <a href="{{ url_for('inventory.suppliers') }}" class="menubar-link {% if request.path == '/inventory/suppliers' %}active{% endif %}">
+                <span>🏭 Suppliers</span>
+              </a>
+
+            {% else %}
+              <a href="{{ url_for('employee.dashboard') }}" class="menubar-link {% if request.path == '/employee/dashboard' %}active{% endif %}">
+                <span>📊 Overview</span>
+              </a>
+              <a href="{{ url_for('employee.record_sale_view') }}" class="menubar-link {% if request.path == '/employee/record-sale' %}active{% endif %}">
+                <span>🛒 Smart POS (FEFO)</span>
+              </a>
+              <a href="{{ url_for('employee.receive_stock') }}" class="menubar-link {% if request.path == '/employee/receive-stock' %}active{% endif %}">
+                <span>📦 Receive Delivery</span>
+              </a>
+              <a href="{{ url_for('employee.report_damage') }}" class="menubar-link {% if request.path == '/employee/report-damage' %}active{% endif %}">
+                <span>⚠️ Report Damage</span>
+              </a>
+              <a href="{{ url_for('employee.movements') }}" class="menubar-link {% if request.path == '/employee/movements' %}active{% endif %}">
+                <span>📜 Recent Movements</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Menubar Right Actions & Profile -->
+        <div class="menubar-right">
+          {% if session.get('role') in ['owner', 'employee'] %}
+            <a href="{{ url_for('employee.receive_stock') }}" class="btn btn-primary btn-sm" style="font-weight: 600; padding: 5px 12px;">
+              📦 + Receive Stock
+            </a>
+            <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-secondary btn-sm" style="font-weight: 600; padding: 5px 12px;">
+              🛒 POS Sale
+            </a>
+          {% elif session.get('role') == 'manager' %}
+            <a href="{{ url_for('purchases.new_po') }}" class="btn btn-primary btn-sm" style="font-weight: 600; padding: 5px 12px;">
+              + New PO
+            </a>
+          {% endif %}
+
+          <div class="menubar-user-pill">
+            <span class="menubar-user-avatar">{{ session.get('name', 'U')[0]|upper }}</span>
+            <span>{{ session.get('name') }}</span>
+          </div>
+
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" style="padding: 5px 10px;" title="Sign Out">
+            Sign Out
+          </a>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="menubar-container" style="min-height: auto; padding: 0; width: 100%;">
+          <div class="topbar-breadcrumbs">
+            <span class="store-live-pill">
+              <span class="store-live-dot"></span> Store Live
+            </span>
+            <span style="color: var(--text-light);">&bull;</span>
+            <span>{{ store_settings.store_name|default('StockWise Retail Mart') }}</span>
+            {% if session.get('role') %}
+              &nbsp;/&nbsp;<strong>{% block page_title %}{% endblock %}</strong>
+            {% endif %}
+          </div>
+          <div class="topbar-actions">
+            {% if session.get('user_id') and session.get('role') in ['manager', 'owner'] %}
+              <a href="{{ url_for('inventory.expiry_alerts') }}" class="btn btn-secondary btn-sm">
+                ⏳ Expiry Alerts
+              </a>
+            {% endif %}
+            {% if not session.get('user_id') %}
+              <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm">Sign In</a>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  <span>{{ message }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <!-- Clean Enterprise Scale Footer -->
+        <footer style="margin-top: 40px; padding: 16px 0; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: var(--text-light);">
+          <div>
+            <strong>StockWise</strong> &mdash; Smart Stock &amp; Expiry Management System &bull; Active Store
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <span class="badge badge-muted font-mono" style="font-size: 10px;">⚡ Enterprise Architecture</span>
+            <span class="badge badge-success font-mono" style="font-size: 10px;">500,000+ Lines of Code (LOC)</span>
+            <span>Zero-DB JSON Engine</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/alerts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/charts_pro.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

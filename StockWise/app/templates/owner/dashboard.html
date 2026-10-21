@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Owner Command Center — StockWise{% endblock %}
+{% block page_title %}Business Owner / Shop Command Center{% endblock %}
+
+{% block content %}
+<!-- Master Quick Header -->
+<div class="page-header" style="margin-bottom: 20px;">
+  <div class="page-header-row">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span class="badge badge-success font-mono">Store Live</span>
+        <span style="font-size: 12px; color: var(--text-light);">&bull; Real-time Shop Intelligence</span>
+      </div>
+      <h2>Shop Owner Executive Command Center</h2>
+      <p class="greeting-text">Live overview of daily sales, profit &amp; loss, expiry days countdown, fast &amp; slow items, and restock needs.</p>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <a href="{{ url_for('employee.receive_stock') }}" class="btn btn-primary" style="background: var(--brand-primary); color: #ffffff; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">
+        📦 + Enter Incoming Stock
+      </a>
+      <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-secondary">
+        🛒 + Record Sale (POS)
+      </a>
+      <a href="{{ url_for('reports.export_sales') }}" class="btn btn-secondary btn-sm" title="Download Excel/CSV dataset">
+        📥 Sales CSV
+      </a>
+      <a href="{{ url_for('reports.export_inventory') }}" class="btn btn-secondary btn-sm" title="Download Stock CSV">
+        📥 Stock CSV
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SECTION 1: DAILY SALES, REVENUE & PROFIT VS. LOSS
+     ======================================================== -->
+<div style="margin-bottom: 28px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+    <div>
+      <h3 style="display: flex; align-items: center; gap: 8px;">
+        <span>💰 Daily Sales, Revenue &amp; Profit vs. Loss</span>
+        <span class="badge badge-info font-mono">Live Daily Accounting</span>
+      </h3>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">
+        Detailed daily tracking: How much money came in, product wholesale costs, gross profit earned, wastage losses written off, and final net earnings.
+      </p>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <a href="{{ url_for('reports.export_daily_pnl') }}" class="btn btn-secondary btn-sm" title="Download daily financial statement">
+        📥 Export Daily P&amp;L CSV
+      </a>
+      <span style="font-size: 11.5px; color: var(--text-light);">Auto-computed in real time</span>
+    </div>
+  </div>
+
+  <!-- 4 Hero Daily Cards: Today's Financial Position -->
+  <div class="metrics-grid" style="margin-bottom: 0;">
+    <!-- 1. Today's Money Collected (Sales Revenue) -->
+    <div class="metric-card">
+      <div class="metric-title">
+        <span>Today's Money Received</span>
+        <span style="font-size: 16px;">💵</span>
+      </div>
+      <div class="metric-value font-mono">{{ cc.today_pnl.revenue|currency }}</div>
+      <div class="metric-footer" style="color: var(--text-muted);">
+        <strong>{{ cc.today_pnl.orders }}</strong> customer orders &bull; <strong>{{ cc.today_pnl.items_sold }}</strong> units sold today
+      </div>
+    </div>
+
+    <!-- 2. Product Wholesale Cost (COGS) -->
+    <div class="metric-card">
+      <div class="metric-title">
+        <span>Today's Wholesale Cost (COGS)</span>
+        <span style="font-size: 16px;">📦</span>
+      </div>
+      <div class="metric-value font-mono">{{ cc.today_pnl.cogs|currency }}</div>
+      <div class="metric-footer">Original batch purchase cost for today's sold goods</div>
+    </div>
+
+    <!-- 3. Today's Gross Profit -->
+    <div class="metric-card {% if cc.today_pnl.gross_profit > 0 %}success{% endif %}">
+      <div class="metric-title">
+        <span>Today's Gross Profit</span>
+        <span class="badge badge-success" style="font-size: 10px;">{{ cc.today_pnl.margin_pct }}% Margin</span>
+      </div>
+      <div class="metric-value font-mono" style="color: var(--color-success);">
+        {% if cc.today_pnl.gross_profit > 0 %}+{% endif %}{{ cc.today_pnl.gross_profit|currency }}
+      </div>
+      <div class="metric-footer">Profit earned on customer sales (Money In − COGS)</div>
+    </div>
+
+    <!-- 4. Today's Wastage & Expiry Loss -->
+    <div class="metric-card {% if cc.today_pnl.loss > 0 %}danger{% endif %}">
+      <div class="metric-title">
+        <span>Today's Recorded Loss</span>
+        <span class="badge badge-danger" style="font-size: 10px;">Expired / Damaged</span>
+      </div>
+      <div class="metric-value font-mono" style="color: {% if cc.today_pnl.loss > 0 %}var(--color-danger){% else %}var(--text-muted){% endif %};">
+        {% if cc.today_pnl.loss > 0 %}-{% endif %}{{ cc.today_pnl.loss|currency }}
+      </div>
+      <div class="metric-footer" style="color: {% if cc.today_pnl.loss > 0 %}var(--color-danger){% else %}var(--text-light){% endif %};">
+        {{ cc.today_pnl.waste_units }} unit(s) discarded or expired today
+      </div>
+    </div>
+  </div>
+
+  <!-- Today's Bottom-Line Net Profit / Loss Banner -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-left: 4px solid {% if cc.today_pnl.net_profit > 0 %}var(--color-success){% elif cc.today_pnl.net_profit < 0 %}var(--color-danger){% else %}var(--border-medium){% endif %}; border-radius: var(--radius-sm); padding: 14px 20px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-xs);">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <span style="font-weight: 700; font-size: 14px;">Today's Final Net Balance (Gross Profit − Wastage Loss):</span>
+      <span class="font-mono" style="font-size: 1.35rem; font-weight: 800; color: {% if cc.today_pnl.net_profit > 0 %}var(--color-success){% elif cc.today_pnl.net_profit < 0 %}var(--color-danger){% else %}var(--text-muted){% endif %};">
+        {% if cc.today_pnl.net_profit > 0 %}+{% endif %}{{ cc.today_pnl.net_profit|currency }}
+      </span>
+      {% if cc.today_pnl.net_profit > 0 %}
+        <span class="badge badge-success">🟢 Profitable Day</span>
+      {% elif cc.today_pnl.net_profit < 0 %}
+        <span class="badge badge-danger">🔴 Net Loss Today (Losses exceed sales profit)</span>
+      {% elif cc.today_pnl.revenue > 0 %}
+        <span class="badge badge-warning">🟡 Break-Even Day</span>
+      {% else %}
+        <span class="badge badge-muted">⚪ No Transactions Recorded Today</span>
+      {% endif %}
+    </div>
+
+    <!-- Quick Historical Comparison Reference -->
+    <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap;">
+      <span>Yesterday: <strong class="font-mono" style="color: var(--text-main);">{{ cc.yesterday_pnl.revenue|currency }}</strong> sales &bull; <strong class="font-mono" style="color: {% if cc.yesterday_pnl.net_profit >= 0 %}var(--color-success){% else %}var(--color-danger){% endif %};">{{ cc.yesterday_pnl.net_profit|currency }}</strong> net</span>
+      <span>&bull;</span>
+      <span>This Month: <strong class="font-mono" style="color: var(--text-main);">{{ cc.month_pnl.revenue|currency }}</strong> sales &bull; <strong class="font-mono" style="color: {% if cc.month_pnl.net_profit >= 0 %}var(--color-success){% else %}var(--color-danger){% endif %};">{{ cc.month_pnl.net_profit|currency }}</strong> net</span>
+    </div>
+  </div>
+
+  <!-- Day-by-Day Historical Breakdown Table (Daily Ledger) -->
+  <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 18px; margin-top: 16px; box-shadow: var(--shadow-xs);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+      <div>
+        <h4 style="margin: 0; font-size: 14px; font-weight: 700;">📅 Day-by-Day Financial Ledger (Money In, Profit &amp; Loss per Day)</h4>
+        <p style="font-size: 11.5px; color: var(--text-light); margin: 2px 0 0 0;">Complete daily statement showing exact cash received, product costs, gross profit, wastage write-offs, and final net profit.</p>
+      </div>
+      <span class="badge badge-muted font-mono" style="font-size: 11px;">Showing Recent Days</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Date &amp; Day</th>
+            <th>Orders</th>
+            <th>Money In (Daily Revenue)</th>
+            <th>Product Cost (COGS)</th>
+            <th>Gross Profit</th>
+            <th>Margin %</th>
+            <th>Wastage / Loss</th>
+            <th>Net Profit / (Loss)</th>
+            <th class="text-right">Daily Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in cc.daily_ledger %}
+            <tr style="{% if row.is_today %}background: rgba(120, 71, 37, 0.05); font-weight: 500;{% endif %}">
+              <td>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  {% if row.is_today %}
+                    <span class="badge badge-primary font-mono" style="font-size: 10px; padding: 1px 6px;">TODAY</span>
+                  {% elif row.is_yesterday %}
+                    <span class="badge badge-muted font-mono" style="font-size: 10px; padding: 1px 6px;">YESTERDAY</span>
+                  {% endif %}
+                  <strong>{{ row.label }}</strong>
+                </div>
+                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">{{ row.formatted_date }}</div>
+              </td>
+              <td>
+                {% if row.orders > 0 %}
+                  <span class="badge badge-muted font-mono">{{ row.orders }} order{% if row.orders != 1 %}s{% endif %}</span>
+                  <div style="font-size: 10.5px; color: var(--text-light);">{{ row.items_sold }} units</div>
+                {% else %}
+                  <span style="color: var(--text-light); font-size: 11px;">0 orders</span>
+                {% endif %}
+              </td>
+              <td class="font-mono">
+                <strong style="font-size: 13px; color: {% if row.revenue > 0 %}var(--text-main){% else %}var(--text-light){% endif %};">
+                  {{ row.revenue|currency }}
+                </strong>
+              </td>
+              <td class="font-mono" style="color: var(--text-muted); font-size: 12.5px;">
+                {{ row.cogs|currency }}
+              </td>
+              <td class="font-mono" style="font-weight: 600; color: {% if row.gross_profit > 0 %}var(--color-success){% else %}var(--text-light){% endif %};">
+                {% if row.gross_profit > 0 %}+{% endif %}{{ row.gross_profit|currency }}
+              </td>
+              <td class="font-mono" style="font-size: 12px; color: {% if row.margin_pct > 0 %}var(--color-success){% else %}var(--text-light){% endif %};">
+                {{ row.margin_pct }}%
+              </td>
+              <td class="font-mono" style="font-weight: 600; color: {% if row.loss > 0 %}var(--color-danger){% else %}var(--text-light){% endif %};">
+                {% if row.loss > 0 %}
+                  -{{ row.loss|currency }}
+                  <div style="font-size: 10.5px; color: var(--color-danger); font-weight: normal;">
+                    {{ row.waste_units }} unit(s) ({{ row.waste_reasons_summary }})
+                  </div>
+                {% else %}
+                  $0.00
+                {% endif %}
+              </td>
+              <td class="font-mono" style="font-size: 13.5px; font-weight: 800; color: {% if row.net_profit > 0 %}var(--color-success){% elif row.net_profit < 0 %}var(--color-danger){% else %}var(--text-light){% endif %};">
+                {% if row.net_profit > 0 %}+{% endif %}{{ row.net_profit|currency }}
+              </td>
+              <td class="text-right">
+                {% if row.status == 'PROFIT' %}
+                  <span class="badge badge-success font-mono" style="font-size: 11px;">🟢 Profitable (+{{ row.net_profit|currency }})</span>
+                {% elif row.status == 'LOSS' %}
+                  <span class="badge badge-danger font-mono" style="font-size: 11px;">🔴 Loss (-{{ (row.net_profit|abs)|currency }})</span>
+                {% elif row.status == 'BREAK_EVEN' %}
+                  <span class="badge badge-warning font-mono" style="font-size: 11px;">🟡 Break-Even</span>
+                {% else %}
+                  <span class="badge badge-muted font-mono" style="font-size: 10.5px;">⚪ No Activity</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     SECTION 2: PRODUCT EXPIRY DAYS LIVE COUNTDOWN
+     ======================================================== -->
+<div style="margin-bottom: 28px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+    <div>
+      <h3 style="display: flex; align-items: center; gap: 8px;">
+        <span>⏳ Product Expiry Days Live Countdown</span>
+        <span class="badge badge-warning font-mono">{{ cc.expired_count + cc.critical_count + cc.warning_count }} Items Require Attention</span>
+      </h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+        Live countdown of shelf life for every batch in the shop. Sell soon-to-expire items first!
+      </p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <span class="badge badge-danger">{{ cc.expired_count }} Expired</span>
+      <span class="badge badge-warning">{{ cc.critical_count }} &le; 3 Days Left</span>
+      <span class="badge badge-info">{{ cc.warning_count }} &le; 7 Days Left</span>
+      <a href="{{ url_for('inventory.expiry_alerts') }}" class="btn btn-secondary btn-sm">All Expiry Alerts &rarr;</a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Product Name &amp; SKU</th>
+          <th>Batch ID</th>
+          <th>Received Date</th>
+          <th>Expiry Date</th>
+          <th>Days Left Until Expiry</th>
+          <th>Units Remaining</th>
+          <th>Capital at Risk</th>
+          <th>Recommended Action</th>
+          <th class="text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 1. Expired Batches (Red) -->
+        {% for b in cc.expired_batches %}
+          <tr style="background: rgba(239, 68, 68, 0.04);">
+            <td>
+              <strong style="color: var(--color-danger);">{{ b.product_name }}</strong>
+              <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }} &bull; {{ b.supplier_name }}</div>
+            </td>
+            <td class="font-mono"><strong>{{ b.id }}</strong></td>
+            <td style="font-size: 12px;">{{ b.received_date }}</td>
+            <td class="font-mono"><strong>{{ b.expiry_date }}</strong></td>
+            <td>
+              <span class="badge badge-danger font-mono" style="font-size: 11px;">
+                🔴 {{ b.expiry_label }}
+              </span>
+            </td>
+            <td><strong>{{ b.quantity_remaining }}</strong> {{ b.product_unit }}</td>
+            <td class="font-mono" style="color: var(--color-danger); font-weight: 700;">
+              {{ (b.quantity_remaining * b.unit_cost)|currency }}
+            </td>
+            <td>
+              <span class="badge badge-danger" style="font-size: 10px;">EXPIRED &bull; REMOVE FROM SHELF</span>
+            </td>
+            <td class="text-right">
+              <form method="POST" action="{{ url_for('inventory.batch_discard', batch_id=b.id) }}" style="display:inline;">
+                <input type="hidden" name="reason" value="EXPIRED">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Discard expired units from {{ b.product_name }}?')">
+                  Discard Stock
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+
+        <!-- 2. Critical Batches (<= 3 Days Left - Orange) -->
+        {% for b in cc.critical_batches %}
+          <tr style="background: rgba(245, 158, 11, 0.04);">
+            <td>
+              <strong>{{ b.product_name }}</strong>
+              <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }}</div>
+            </td>
+            <td class="font-mono">{{ b.id }}</td>
+            <td style="font-size: 12px;">{{ b.received_date }}</td>
+            <td class="font-mono"><strong>{{ b.expiry_date }}</strong></td>
+            <td>
+              <span class="badge badge-warning font-mono" style="font-size: 11px;">
+                🟠 {{ b.expiry_label }}
+              </span>
+            </td>
+            <td><strong>{{ b.quantity_remaining }}</strong> {{ b.product_unit }}</td>
+            <td class="font-mono" style="color: var(--color-warning); font-weight: 700;">
+              {{ (b.quantity_remaining * b.unit_cost)|currency }}
+            </td>
+            <td>
+              <span class="badge badge-warning" style="font-size: 10px;">⚡ SUGGEST 50% DISCOUNT TO SELL</span>
+            </td>
+            <td class="text-right">
+              <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-primary btn-sm">
+                Sell First (FEFO) &rarr;
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+
+        <!-- 3. Warning Batches (4 to 7 Days Left - Yellow) -->
+        {% for b in cc.warning_batches %}
+          <tr>
+            <td>
+              <strong>{{ b.product_name }}</strong>
+              <div style="font-size: 11px; color: var(--text-light);">{{ b.product_sku }}</div>
+            </td>
+            <td class="font-mono">{{ b.id }}</td>
+            <td style="font-size: 12px;">{{ b.received_date }}</td>
+            <td class="font-mono">{{ b.expiry_date }}</td>
+            <td>
+              <span class="badge badge-warning font-mono" style="font-size: 11px;">
+                🟡 {{ b.expiry_label }}
+              </span>
+            </td>
+            <td>{{ b.quantity_remaining }} {{ b.product_unit }}</td>
+            <td class="font-mono">{{ (b.quantity_remaining * b.unit_cost)|currency }}</td>
+            <td>
+              <span class="badge badge-muted" style="font-size: 10px;">Front-Face on shelf</span>
+            </td>
+            <td class="text-right">
+              <a href="{{ url_for('inventory.batch_detail', batch_id=b.id) }}" class="btn btn-secondary btn-sm">Inspect</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========================================================
+     SECTION 3: FAST-MOVING VS. SLOW-MOVING PRODUCTS
+     ======================================================== -->
+<div class="section-grid" style="margin-bottom: 28px;">
+  <!-- Fast Moving (Top Sellers) -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #10b981;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <div>
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <span>🚀 Fast-Moving Products (Top Sellers)</span>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted);">High turnover products driving customer sales</p>
+      </div>
+      <span class="badge badge-success">Top Performers</span>
+    </div>
+
+    {% if cc.fast_moving %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Product Name</th>
+              <th>Units Sold</th>
+              <th class="text-right">Total Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cc.fast_moving %}
+              <tr>
+                <td><span class="badge badge-muted font-mono">#{{ loop.index }}</span></td>
+                <td><strong>{{ item.name }}</strong></td>
+                <td><span class="badge badge-success font-mono">{{ item.quantity }} units</span></td>
+                <td class="text-right font-mono" style="font-weight: 700; color: var(--color-success);">
+                  {{ item.revenue|currency }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="font-size: 13px; color: var(--text-muted); padding: 20px 0; text-align: center;">No sales recorded yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Slow Moving (Stagnant Stock) -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #f59e0b;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <div>
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <span>🐢 Slow-Moving Products (Stagnant Stock)</span>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Stock sitting on shelves tying up capital</p>
+      </div>
+      <span class="badge badge-warning">Capital Locked</span>
+    </div>
+
+    {% if cc.slow_moving %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Shelf Stock</th>
+              <th>Capital Locked</th>
+              <th>Units Sold</th>
+              <th class="text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cc.slow_moving %}
+              <tr>
+                <td>
+                  <strong>{{ item.name }}</strong>
+                  <div style="font-size: 11px; color: var(--text-light);">{{ item.sku }}</div>
+                </td>
+                <td><strong>{{ item.stock }}</strong> units</td>
+                <td class="font-mono" style="color: var(--color-warning); font-weight: 700;">{{ item.cost_value|currency }}</td>
+                <td><span class="badge badge-muted">{{ item.units_sold }} sold</span></td>
+                <td class="text-right">
+                  <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-secondary btn-sm" title="Discount and promote sale">
+                    Promote &rarr;
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p style="font-size: 13px; color: var(--color-success); padding: 20px 0; text-align: center;">No stagnant inventory identified. Stock turnover is healthy!</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ========================================================
+     SECTION 4: RESTOCK NEEDED / REORDERS
+     ======================================================== -->
+<div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 28px; position: relative; overflow: hidden;">
+  <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #6366f1;"></div>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+    <div>
+      <h3 style="display: flex; align-items: center; gap: 8px;">
+        <span>🔔 Restock Needed (Low Stock Replenishment)</span>
+        <span class="badge badge-danger font-mono">{{ cc.reorder_count }} Products Low</span>
+      </h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+        Products running below safety reorder levels. Click "Reorder Now" to automatically generate a Purchase Order.
+      </p>
+    </div>
+    <a href="{{ url_for('purchases.new_po') }}" class="btn btn-primary btn-sm">+ Create Purchase Order</a>
+  </div>
+
+  {% if cc.reorder_needed %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Urgency</th>
+            <th>Product Name &amp; SKU</th>
+            <th>Category</th>
+            <th>Current Saleable Stock</th>
+            <th>Minimum Reorder Level</th>
+            <th>Suggested Restock Order</th>
+            <th class="text-right">1-Click Restock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in cc.reorder_needed %}
+            <tr>
+              <td>
+                {% if r.urgency == 'CRITICAL' %}
+                  <span class="badge badge-danger">OUT OF STOCK</span>
+                {% else %}
+                  <span class="badge badge-warning">LOW STOCK</span>
+                {% endif %}
+              </td>
+              <td>
+                <strong>{{ r.name }}</strong>
+                <div style="font-size: 11px; color: var(--text-light);">{{ r.sku }}</div>
+              </td>
+              <td>{{ r.category_name }}</td>
+              <td>
+                <strong {% if r.saleable_quantity == 0 %}style="color: var(--color-danger); font-size: 14px;"{% else %}style="color: var(--color-warning); font-size: 14px;"{% endif %}>
+                  {{ r.saleable_quantity }}
+                </strong> {{ r.unit }}
+              </td>
+              <td>{{ r.reorder_level }} {{ r.unit }}</td>
+              <td>
+                <span class="badge badge-info font-mono" style="font-size: 12px; padding: 4px 10px;">
+                  +{{ r.suggested_order }} {{ r.unit }}
+                </span>
+              </td>
+              <td class="text-right">
+                <a href="{{ url_for('purchases.new_po') }}?product_id={{ r.product_id }}&suggested_order={{ r.suggested_order }}" class="btn btn-primary btn-sm">
+                  📦 Reorder Stock &rarr;
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="padding: 20px; text-align: center; color: var(--color-success); font-size: 13px;">
+      ✓ All product stock levels are above safety reorder thresholds. No replenishment needed!
+    </div>
+  {% endif %}
+</div>
+
+<!-- ========================================================
+     SECTION 5: ADVANCED CHARTS & VISUAL INTELLIGENCE
+     ======================================================== -->
+<div class="section-grid" style="margin-bottom: 24px;">
+  <!-- Sales & Margin Area Chart -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div>
+        <h3>7-Day Sales &amp; Gross Margin Trend</h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Comparing customer sales revenue against cost of goods sold</p>
+      </div>
+      <span class="badge badge-info font-mono">Live SVG Area Chart</span>
+    </div>
+    <div id="sales-area-chart" style="width: 100%; min-height: 240px;"></div>
+  </div>
+
+  <!-- Category Capital Distribution Donut Chart -->
+  <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div>
+          <h3>Inventory Capital by Department</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Asset distribution across store categories</p>
+        </div>
+        <span class="badge badge-success font-mono">Asset Split</span>
+      </div>
+      <div id="category-donut-chart" style="display: flex; justify-content: center; align-items: center; min-height: 180px;"></div>
+    </div>
+
+    <!-- Expiry Risk Meter -->
+    <div style="border-top: 1px solid var(--border-light); padding-top: 14px; margin-top: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12.5px;">
+        <span class="text-muted">Capital at Risk (&le; 7 Days Expiry):</span>
+        <strong class="font-mono" style="color: var(--color-warning); font-size: 13.5px;">{{ cc.at_risk_capital|currency }}</strong>
+      </div>
+      <div id="expiry-risk-meter"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const trendData = {{ cc.daily_trend|tojson }};
+  renderAreaChart("sales-area-chart", trendData);
+
+  const catData = {{ cc.category_distribution|tojson }};
+  renderCategoryDonutChart("category-donut-chart", catData);
+
+  const healthyVal = {{ cc.healthy_cost }};
+  const warningVal = {{ cc.warning_cost }};
+  const criticalVal = {{ cc.critical_cost }};
+  const expiredVal = {{ cc.expired_cost }};
+  renderExpiryRiskBar("expiry-risk-meter", healthyVal, warningVal, criticalVal, expiredVal);
+});
+</script>
+{% endblock %}

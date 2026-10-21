@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Create Purchase Order — StockWise{% endblock %}
+{% block page_title %}New Purchase Order{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 0 auto;">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h2>Create Supplier Purchase Order</h2>
+        <p class="greeting-text">Generate a formal purchase order to replenish store stock.</p>
+      </div>
+      <a href="{{ url_for('purchases.index') }}" class="btn btn-secondary">Back to Orders</a>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('purchases.new_po') }}">
+    <div class="form-card" style="max-width: 100%; margin-bottom: 24px;">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="supplier_id">Select Supplier <span style="color: var(--color-danger);">*</span></label>
+          <select name="supplier_id" id="supplier_id" class="form-control" required>
+            <option value="">-- Choose Supplier --</option>
+            {% for s in suppliers %}
+              <option value="{{ s.id }}">{{ s.name }} (Lead time: {{ s.lead_time_days }} days)</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="expected_delivery_date">Expected Delivery Date <span style="color: var(--color-danger);">*</span></label>
+          <input type="date" name="expected_delivery_date" id="expected_delivery_date" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Purchase Order Notes</label>
+        <input type="text" name="notes" id="notes" class="form-control" placeholder="e.g. Standard weekly restock, deliver to loading bay 2">
+      </div>
+
+      <h3 style="margin-top: 24px; margin-bottom: 12px;">Order Line Items</h3>
+
+      <div class="table-responsive" style="margin-bottom: 12px;">
+        <table class="data-table" id="po-items-table">
+          <thead>
+            <tr>
+              <th style="width: 45%;">Product</th>
+              <th style="width: 18%;">Order Quantity</th>
+              <th style="width: 18%;">Unit Cost ($)</th>
+              <th style="width: 14%;" class="text-right">Subtotal</th>
+              <th style="width: 5%;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <select name="product_id[]" class="form-control" required>
+                  <option value="">-- Select Product --</option>
+                  {% for p in products %}
+                    <option value="{{ p.id }}" {% if prefill_product_id == p.id %}selected{% endif %}>
+                      {{ p.name }} ({{ p.sku }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <input type="number" name="quantity[]" class="form-control font-mono" min="1" step="1" required 
+                       value="{{ prefill_qty if prefill_product_id else '20' }}">
+              </td>
+              <td>
+                <input type="number" name="unit_cost[]" class="form-control font-mono" min="0" step="0.01" required value="20.00">
+              </td>
+              <td class="text-right">
+                <span class="row-subtotal font-mono" style="font-weight: 600;">$0.00</span>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button type="button" id="add-po-item-btn" class="btn btn-secondary btn-sm">
+        + Add Another Product
+      </button>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 600; font-size: 14px;">Estimated PO Total Cost:</span>
+        <span id="po-grand-total" class="font-mono" style="font-size: 1.25rem; font-weight: 700;">$0.00</span>
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('purchases.index') }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" style="padding: 9px 22px;">Create Purchase Order</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Orders — StockWise{% endblock %}
+{% block page_title %}Supplier Purchase Orders{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Supplier Purchase Orders</h2>
+      <p class="greeting-text">Create replenishment orders and track incoming deliveries against supplier invoices.</p>
+    </div>
+    <a href="{{ url_for('purchases.new_po') }}" class="btn btn-primary">+ Create Purchase Order</a>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div style="display: flex; gap: 8px;">
+    <a href="{{ url_for('purchases.index') }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+    <a href="{{ url_for('purchases.index', status='ORDERED') }}" class="btn btn-sm {% if current_status == 'ORDERED' %}btn-primary{% else %}btn-secondary{% endif %}">Ordered</a>
+    <a href="{{ url_for('purchases.index', status='PARTIALLY_RECEIVED') }}" class="btn btn-sm {% if current_status == 'PARTIALLY_RECEIVED' %}btn-primary{% else %}btn-secondary{% endif %}">Partially Received</a>
+    <a href="{{ url_for('purchases.index', status='COMPLETED') }}" class="btn btn-sm {% if current_status == 'COMPLETED' %}btn-primary{% else %}btn-secondary{% endif %}">Completed</a>
+  </div>
+
+  <input type="text" placeholder="Search orders..." data-table-search="po-table" class="form-control search-input" style="max-width: 200px;">
+</div>
+
+<div class="table-responsive">
+  <table class="data-table" id="po-table">
+    <thead>
+      <tr>
+        <th>PO Number</th>
+        <th>Supplier</th>
+        <th>Created</th>
+        <th>Expected Delivery</th>
+        <th>Total Value</th>
+        <th>Receiving Status</th>
+        <th>Progress</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for po in purchase_orders %}
+        <tr>
+          <td class="font-mono">
+            <a href="{{ url_for('purchases.po_detail', po_id=po.id) }}"><strong>{{ po.po_number }}</strong></a>
+          </td>
+          <td><strong>{{ po.supplier_name }}</strong></td>
+          <td style="font-size: 12px;">{{ po.created_at|date_short }}</td>
+          <td class="font-mono">{{ po.expected_delivery_date }}</td>
+          <td class="font-mono"><strong>{{ po.total_cost|currency }}</strong></td>
+          <td>
+            {% if po.status == 'COMPLETED' %}
+              <span class="badge badge-success">Completed</span>
+            {% elif po.status == 'PARTIALLY_RECEIVED' %}
+              <span class="badge badge-warning">Partial Delivery</span>
+            {% else %}
+              <span class="badge badge-info">Ordered</span>
+            {% endif %}
+          </td>
+          <td style="width: 130px;">
+            <div style="font-size: 11px; margin-bottom: 2px;">{{ po.total_received }} / {{ po.total_ordered }} units ({{ po.progress_pct }}%)</div>
+            <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+              <div style="width: {{ po.progress_pct }}%; height: 100%; background: {% if po.status == 'COMPLETED' %}var(--color-success){% else %}var(--brand-accent){% endif %};"></div>
+            </div>
+          </td>
+          <td class="text-right">
+            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+              <a href="{{ url_for('purchases.po_detail', po_id=po.id) }}" class="btn btn-secondary btn-sm">View</a>
+              {% if po.status != 'COMPLETED' %}
+                <a href="{{ url_for('purchases.receive_goods', po_id=po.id) }}" class="btn btn-primary btn-sm">Receive Goods</a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

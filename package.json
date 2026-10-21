@@ -1,0 +1,34 @@
+{
+  "name": "smart-stock-and-expiry-management",
+  "version": "4.2.0",
+  "description": "StockWise - Smart Stock & Expiry Management System with FEFO, daily profit/loss, and expiry countdowns",
+  "scripts": {
+    "start": "python main.py",
+    "dev": "python main.py",
+    "build": "python StockWise/build_app_code.py",
+    "test": "python -m unittest discover -s StockWise/tests -p \"test_*.py\"",
+    "lint": "python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics"
+  },
+  "keywords": [
+    "inventory-management",
+    "fefo",
+    "stock-tracking",
+    "expiry-management",
+    "retail-pos",
+    "profit-and-loss",
+    "python",
+    "flask"
+  ],
+  "author": "Radhika Thiriveedhi <radhikathiriveedhi@gmail.com>",
+  "contributors": [
+    "Radhika Thiriveedhi <radhikathiriveedhi@gmail.com>",
+    "Ramya Sri <guntupalliramyasri@gmail.com>",
+    "Phani <23471a4392@gmail.com>"
+  ],
+  "collaborators": [
+    "Radhika Thiriveedhi <radhikathiriveedhi@gmail.com>",
+    "Ramya Sri <guntupalliramyasri@gmail.com>",
+    "Phani <23471a4392@gmail.com>"
+  ],
+  "private": true
+}

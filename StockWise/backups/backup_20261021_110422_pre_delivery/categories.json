@@ -1,0 +1,38 @@
+[
+  {
+    "id": "CAT-001",
+    "name": "Dairy & Eggs",
+    "description": "Milk, yogurt, cheeses, eggs and butter",
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "CAT-002",
+    "name": "Bakery",
+    "description": "Fresh breads, buns, rolls and pastries",
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "CAT-003",
+    "name": "Beverages",
+    "description": "Juices, soft drinks, water and packaged teas",
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "CAT-004",
+    "name": "Pantry & Staples",
+    "description": "Rice, flour, cooking oils, pasta and spices",
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "CAT-005",
+    "name": "Snacks & Confectionery",
+    "description": "Biscuits, chips, chocolates and nuts",
+    "created_at": "2026-09-01T08:00:00"
+  },
+  {
+    "id": "CAT-006",
+    "name": "Produce & Fresh",
+    "description": "Packaged fruits and washed vegetables",
+    "created_at": "2026-09-01T08:00:00"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "PRD-001",
+    "sku": "MILK-500",
+    "name": "Whole Milk 500 ml",
+    "category_id": "CAT-001",
+    "unit": "carton",
+    "selling_price": 32.0,
+    "reorder_level": 25,
+    "active": true
+  },
+  {
+    "id": "PRD-002",
+    "sku": "YOGURT-200",
+    "name": "Greek Yogurt 200 g",
+    "category_id": "CAT-001",
+    "unit": "cup",
+    "selling_price": 45.0,
+    "reorder_level": 15,
+    "active": true
+  },
+  {
+    "id": "PRD-003",
+    "sku": "BREAD-SOUR",
+    "name": "Sourdough Bread 400 g",
+    "category_id": "CAT-002",
+    "unit": "loaf",
+    "selling_price": 55.0,
+    "reorder_level": 10,
+    "active": true
+  },
+  {
+    "id": "PRD-004",
+    "sku": "BREAD-WHITE",
+    "name": "Fresh Sliced White Bread",
+    "category_id": "CAT-002",
+    "unit": "loaf",
+    "selling_price": 38.0,
+    "reorder_level": 12,
+    "active": true
+  },
+  {
+    "id": "PRD-005",
+    "sku": "JUICE-ORANGE",
+    "name": "Fresh Orange Juice 1 L",
+    "category_id": "CAT-003",
+    "unit": "bottle",
+    "selling_price": 85.0,
+    "reorder_level": 20,
+    "active": true
+  },
+  {
+    "id": "PRD-006",
+    "sku": "COFFEE-COLD",
+    "name": "Cold Brew Coffee 250 ml",
+    "category_id": "CAT-003",
+    "unit": "can",
+    "selling_price": 60.0,
+    "reorder_level": 15,
+    "active": true
+  },
+  {
+    "id": "PRD-007",
+    "sku": "RICE-BASMATI",
+    "name": "Basmati Rice 5 kg",
+    "category_id": "CAT-004",
+    "unit": "bag",
+    "selling_price": 320.0,
+    "reorder_level": 8,
+    "active": true
+  },
+  {
+    "id": "PRD-008",
+    "sku": "OIL-OLIVE",
+    "name": "Extra Virgin Olive Oil 500 ml",
+    "category_id": "CAT-004",
+    "unit": "bottle",
+    "selling_price": 260.0,
+    "reorder_level": 6,
+    "active": true
+  },
+  {
+    "id": "PRD-009",
+    "sku": "CHIPS-SALT",
+    "name": "Salted Potato Chips 150 g",
+    "category_id": "CAT-005",
+    "unit": "packet",
+    "selling_price": 25.0,
+    "reorder_level": 30,
+    "active": true
+  },
+  {
+    "id": "PRD-010",
+    "sku": "CHOC-DARK",
+    "name": "Dark Chocolate Bar 80 g",
+    "category_id": "CAT-005",
+    "unit": "bar",
+    "selling_price": 70.0,
+    "reorder_level": 20,
+    "active": true
+  },
+  {
+    "id": "PRD-011",
+    "sku": "CHEESE-CHEDDAR",
+    "name": "Cheddar Cheese Block 250 g",
+    "category_id": "CAT-001",
+    "unit": "block",
+    "selling_price": 140.0,
+    "reorder_level": 10,
+    "active": true
+  },
+  {
+    "id": "PRD-012",
+    "sku": "EGGS-12PK",
+    "name": "Farm Fresh Eggs 12-pack",
+    "category_id": "CAT-001",
+    "unit": "carton",
+    "selling_price": 65.0,
+    "reorder_level": 15,
+    "active": true
+  }
+]

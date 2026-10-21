@@ -1,0 +1,38 @@
+[
+  {
+    "id": "SUP-001",
+    "name": "Fresh Valley Dairy Farm",
+    "contact_person": "Mark Stevens",
+    "phone": "+1 (555) 234-5678",
+    "email": "orders@freshvalleydairy.com",
+    "lead_time_days": 2,
+    "active": true
+  },
+  {
+    "id": "SUP-002",
+    "name": "Artisan Harvest Bakery Ltd",
+    "contact_person": "Elena Rostova",
+    "phone": "+1 (555) 345-6789",
+    "email": "deliveries@artisanharvest.com",
+    "lead_time_days": 1,
+    "active": true
+  },
+  {
+    "id": "SUP-003",
+    "name": "Metro Wholesale Beverages",
+    "contact_person": "Carlos Ramos",
+    "phone": "+1 (555) 456-7890",
+    "email": "supply@metrowholesale.com",
+    "lead_time_days": 3,
+    "active": true
+  },
+  {
+    "id": "SUP-004",
+    "name": "Sunrise Milling & Staples Co",
+    "contact_person": "Anita Roy",
+    "phone": "+1 (555) 567-8901",
+    "email": "sales@sunrisestaples.com",
+    "lead_time_days": 4,
+    "active": true
+  }
+]

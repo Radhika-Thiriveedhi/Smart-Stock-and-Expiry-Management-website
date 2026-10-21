@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Staff & Permissions — StockWise{% endblock %}
+{% block page_title %}Staff & Role-Based Access Control{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Store Staff Accounts & Roles</h2>
+      <p class="greeting-text">Control shop permissions across Store Employees, Inventory Managers, and Business Owners.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-grid">
+  <!-- Staff List Table -->
+  <div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in staff_list %}
+            <tr>
+              <td>
+                <strong>{{ u.name }}</strong>
+                <div style="font-size: 11px; color: var(--text-light);">{{ u.username }} &bull; {{ u.email }}</div>
+              </td>
+              <td>
+                {% if u.role == 'owner' %}
+                  <span class="badge badge-success">Owner</span>
+                {% elif u.role == 'manager' %}
+                  <span class="badge badge-warning">Manager</span>
+                {% else %}
+                  <span class="badge badge-info">Employee</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if u.active %}
+                  <span class="badge badge-success">Active</span>
+                {% else %}
+                  <span class="badge badge-muted">Disabled</span>
+                {% endif %}
+              </td>
+              <td style="font-size: 12px;">{{ u.created_at|date_short }}</td>
+              <td class="text-right">
+                <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                  {% if u.id != session.get('user_id') %}
+                    <form method="POST" action="{{ url_for('owner.staff') }}" style="display:inline;">
+                      <input type="hidden" name="action" value="toggle_active">
+                      <input type="hidden" name="user_id" value="{{ u.id }}">
+                      <button type="submit" class="btn btn-secondary btn-sm">
+                        {% if u.active %}Disable{% else %}Enable{% endif %}
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Staff Account Form -->
+  <div class="form-card" style="height: fit-content;">
+    <h3 style="margin-bottom: 14px;">Add New Team Member</h3>
+    <form method="POST" action="{{ url_for('owner.staff') }}">
+      <input type="hidden" name="action" value="create">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username <span style="color: var(--color-danger);">*</span></label>
+          <input type="text" id="username" name="username" class="form-control" required placeholder="e.g. jsmith">
+        </div>
+
+        <div class="form-group">
+          <label for="role">Store Role <span style="color: var(--color-danger);">*</span></label>
+          <select name="role" id="role" class="form-control" required>
+            <option value="employee">Store Employee (Sales, Deliveries, Movements)</option>
+            <option value="manager">Inventory Manager (Stock, Batches, Orders)</option>
+            <option value="owner">Business Owner (Full Financial Access)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Full Name <span style="color: var(--color-danger);">*</span></label>
+        <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. John Smith">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="jsmith@stockwise.local">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Temporary Password <span style="color: var(--color-danger);">*</span></label>
+        <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create Staff Account</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Receipt {{ sale.receipt_no }} — StockWise{% endblock %}
+{% block page_title %}Transaction Receipt{% endblock %}
+
+{% block content %}
+<div class="no-print" style="max-width: 380px; margin: 0 auto 16px; display: flex; justify-content: space-between;">
+  <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+  <div style="display: flex; gap: 8px;">
+    <a href="{{ url_for('employee.record_sale_view') }}" class="btn btn-secondary btn-sm">New Sale</a>
+    <button onclick="window.print()" class="btn btn-primary btn-sm">Print Receipt</button>
+  </div>
+</div>
+
+<div class="receipt-container">
+  <div class="receipt-header">
+    <div class="receipt-title">{{ settings.store_name|default('StockWise Mart') }}</div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">{{ settings.address|default('Market Street') }}</div>
+    <div style="font-size: 11px; color: var(--text-muted);">Tel: {{ settings.phone|default('+1 555 019 2831') }}</div>
+    
+    <div style="margin-top: 10px; font-size: 11px; font-weight: 600;">
+      Receipt: {{ sale.receipt_no }}
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted);">
+      Date: {{ sale.created_at|datetime_format }} &bull; Cashier: {{ sale.cashier_name }}
+    </div>
+  </div>
+
+  <table class="receipt-items">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th class="text-center">Qty</th>
+        <th class="text-right">Price</th>
+        <th class="text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in sale.items %}
+        <tr>
+          <td>
+            <div>{{ item.product_name }}</div>
+            <div style="font-size: 10px; color: var(--text-light);">Batch: {{ item.batch_id }} (FEFO)</div>
+          </td>
+          <td class="text-center">{{ item.quantity }}</td>
+          <td class="text-right">{{ item.unit_price|currency }}</td>
+          <td class="text-right">{{ item.subtotal|currency }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="receipt-totals">
+    <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 4px;">
+      <span>TOTAL</span>
+      <span>{{ sale.total_amount|currency }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+      <span>Payment Method</span>
+      <span>{{ sale.payment_method }}</span>
+    </div>
+  </div>
+
+  <div class="receipt-footer">
+    <p>{{ settings.receipt_footer|default('Thank you for shopping with StockWise!') }}</p>
+    <p style="margin-top: 4px; font-size: 10px;">Stock tracked with FEFO batch management</p>
+  </div>
+</div>
+{% endblock %}

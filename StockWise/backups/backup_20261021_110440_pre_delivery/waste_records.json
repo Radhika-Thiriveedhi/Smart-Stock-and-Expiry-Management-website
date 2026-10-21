@@ -1,0 +1,15 @@
+[
+  {
+    "id": "WST-001",
+    "product_id": "PRD-002",
+    "product_name": "Greek Yogurt 200 g",
+    "batch_id": "BAT-003",
+    "quantity": 2,
+    "unit_cost": 32.0,
+    "total_loss": 64.0,
+    "reason": "DAMAGED_IN_STORE",
+    "notes": "Damaged container during shelf restocking",
+    "reported_by": "USR-003",
+    "created_at": "2026-10-20T17:00:00"
+  }
+]

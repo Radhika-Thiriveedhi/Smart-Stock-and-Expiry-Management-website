@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Product Catalogue — StockWise{% endblock %}
+{% block page_title %}Product Catalogue{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h2>Product Catalogue</h2>
+      <p class="greeting-text">Maintain master products, SKU identifiers, selling prices, and reorder levels.</p>
+    </div>
+    <a href="{{ url_for('inventory.product_create') }}" class="btn btn-primary">+ Add New Product</a>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <form method="GET" action="{{ url_for('inventory.products') }}" style="display: flex; gap: 10px; flex: 1; flex-wrap: wrap;">
+    <input type="text" name="q" value="{{ search or '' }}" placeholder="Search by name or SKU..." class="form-control search-input" style="max-width: 280px;">
+    
+    <select name="category_id" class="form-control" style="max-width: 200px;" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if selected_category == c.id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    {% if search or selected_category %}
+      <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary">Reset</a>
+    {% endif %}
+  </form>
+
+  <div>
+    {% if show_all %}
+      <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary btn-sm">Hide Inactive Items</a>
+    {% else %}
+      <a href="{{ url_for('inventory.products', show_all='1') }}" class="btn btn-secondary btn-sm">Show All (Including Inactive)</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>SKU</th>
+        <th>Product Name</th>
+        <th>Category</th>
+        <th>Unit</th>
+        <th>Price</th>
+        <th>Saleable Stock</th>
+        <th>Reorder At</th>
+        <th>Status</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+        <tr {% if not p.active %}style="opacity: 0.6;"{% endif %}>
+          <td class="font-mono"><strong>{{ p.sku }}</strong></td>
+          <td>
+            <strong>{{ p.name }}</strong>
+            {% if not p.active %}<span class="badge badge-muted" style="margin-left: 6px;">Inactive</span>{% endif %}
+          </td>
+          <td>{{ p.category_name }}</td>
+          <td>{{ p.unit }}</td>
+          <td>{{ p.selling_price|currency }}</td>
+          <td>
+            {% if p.stock_info %}
+              <strong>{{ p.stock_info.saleable_quantity }}</strong>
+              {% if p.stock_info.expired_quantity > 0 %}
+                <span style="font-size: 11px; color: var(--color-danger);">({{ p.stock_info.expired_quantity }} exp)</span>
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+          </td>
+          <td>{{ p.reorder_level }}</td>
+          <td>
+            {% if p.stock_info %}
+              {% if p.stock_info.is_out_of_stock %}
+                <span class="badge badge-danger">Out of stock</span>
+              {% elif p.stock_info.is_low_stock %}
+                <span class="badge badge-warning">Low stock</span>
+              {% else %}
+                <span class="badge badge-success">Good</span>
+              {% endif %}
+            {% endif %}
+          </td>
+          <td class="text-right">
+            <div style="display: flex; gap: 6px; justify-content: flex-end;">
+              <a href="{{ url_for('inventory.product_edit', product_id=p.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('inventory.product_toggle_status', product_id=p.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Toggle status for {{ p.name }}?')">
+                  {% if p.active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+  "store_name": "StockWise Retail Mart",
+  "tagline": "Fresh, Smart & Local",
+  "address": "42 Market Street, Central City",
+  "phone": "+1 (555) 019-2831",
+  "currency_symbol": "₹",
+  "near_expiry_days": 7,
+  "critical_expiry_days": 3,
+  "default_tax_rate": 0.0,
+  "receipt_footer": "Thank you for shopping with StockWise!"
+}

@@ -1,0 +1,192 @@
+[
+  {
+    "id": "BAT-001",
+    "product_id": "PRD-001",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-18",
+    "expiry_date": "2026-10-25",
+    "quantity_received": 100,
+    "quantity_remaining": 18,
+    "unit_cost": 24.0
+  },
+  {
+    "id": "BAT-002",
+    "product_id": "PRD-001",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-20",
+    "expiry_date": "2026-10-28",
+    "quantity_received": 50,
+    "quantity_remaining": 50,
+    "unit_cost": 24.5
+  },
+  {
+    "id": "BAT-003",
+    "product_id": "PRD-002",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-10",
+    "expiry_date": "2026-10-24",
+    "quantity_received": 60,
+    "quantity_remaining": 8,
+    "unit_cost": 32.0
+  },
+  {
+    "id": "BAT-004",
+    "product_id": "PRD-002",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-19",
+    "expiry_date": "2026-11-04",
+    "quantity_received": 40,
+    "quantity_remaining": 40,
+    "unit_cost": 32.0
+  },
+  {
+    "id": "BAT-005",
+    "product_id": "PRD-003",
+    "supplier_id": "SUP-002",
+    "received_date": "2026-10-19",
+    "expiry_date": "2026-10-22",
+    "quantity_received": 30,
+    "quantity_remaining": 5,
+    "unit_cost": 38.0
+  },
+  {
+    "id": "BAT-006",
+    "product_id": "PRD-003",
+    "supplier_id": "SUP-002",
+    "received_date": "2026-10-16",
+    "expiry_date": "2026-10-19",
+    "quantity_received": 20,
+    "quantity_remaining": 3,
+    "unit_cost": 38.0
+  },
+  {
+    "id": "BAT-007",
+    "product_id": "PRD-004",
+    "supplier_id": "SUP-002",
+    "received_date": "2026-10-15",
+    "expiry_date": "2026-10-18",
+    "quantity_received": 25,
+    "quantity_remaining": 4,
+    "unit_cost": 26.0
+  },
+  {
+    "id": "BAT-008",
+    "product_id": "PRD-004",
+    "supplier_id": "SUP-002",
+    "received_date": "2026-10-20",
+    "expiry_date": "2026-10-24",
+    "quantity_received": 35,
+    "quantity_remaining": 28,
+    "unit_cost": 26.0
+  },
+  {
+    "id": "BAT-009",
+    "product_id": "PRD-005",
+    "supplier_id": "SUP-003",
+    "received_date": "2026-10-12",
+    "expiry_date": "2026-10-26",
+    "quantity_received": 50,
+    "quantity_remaining": 12,
+    "unit_cost": 62.0
+  },
+  {
+    "id": "BAT-010",
+    "product_id": "PRD-006",
+    "supplier_id": "SUP-003",
+    "received_date": "2026-10-01",
+    "expiry_date": "2026-11-20",
+    "quantity_received": 80,
+    "quantity_remaining": 65,
+    "unit_cost": 42.0
+  },
+  {
+    "id": "BAT-011",
+    "product_id": "PRD-007",
+    "supplier_id": "SUP-004",
+    "received_date": "2026-09-15",
+    "expiry_date": "2027-09-15",
+    "quantity_received": 30,
+    "quantity_remaining": 5,
+    "unit_cost": 240.0
+  },
+  {
+    "id": "BAT-012",
+    "product_id": "PRD-008",
+    "supplier_id": "SUP-004",
+    "received_date": "2026-09-20",
+    "expiry_date": "2027-09-20",
+    "quantity_received": 25,
+    "quantity_remaining": 4,
+    "unit_cost": 195.0
+  },
+  {
+    "id": "BAT-013",
+    "product_id": "PRD-009",
+    "supplier_id": "SUP-003",
+    "received_date": "2026-10-05",
+    "expiry_date": "2027-02-15",
+    "quantity_received": 120,
+    "quantity_remaining": 95,
+    "unit_cost": 16.0
+  },
+  {
+    "id": "BAT-014",
+    "product_id": "PRD-010",
+    "supplier_id": "SUP-003",
+    "received_date": "2026-09-10",
+    "expiry_date": "2027-03-25",
+    "quantity_received": 60,
+    "quantity_remaining": 42,
+    "unit_cost": 48.0
+  },
+  {
+    "id": "BAT-015",
+    "product_id": "PRD-011",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-10",
+    "expiry_date": "2026-10-17",
+    "quantity_received": 15,
+    "quantity_remaining": 2,
+    "unit_cost": 95.0
+  },
+  {
+    "id": "BAT-016",
+    "product_id": "PRD-011",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-18",
+    "expiry_date": "2026-11-18",
+    "quantity_received": 20,
+    "quantity_remaining": 20,
+    "unit_cost": 95.0
+  },
+  {
+    "id": "BAT-017",
+    "product_id": "PRD-012",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-14",
+    "expiry_date": "2026-10-28",
+    "quantity_received": 40,
+    "quantity_remaining": 22,
+    "unit_cost": 48.0
+  },
+  {
+    "product_id": "PRD-009",
+    "supplier_id": "SUP-001",
+    "received_date": "2026-10-21",
+    "expiry_date": "2026-10-28",
+    "quantity_received": 60,
+    "quantity_remaining": 60,
+    "unit_cost": 46.0,
+    "id": "BAT-018"
+  },
+  {
+    "product_id": "PRD-007",
+    "supplier_id": "SUP-002",
+    "received_date": "2026-10-21",
+    "expiry_date": "2026-11-20",
+    "quantity_received": 50,
+    "quantity_remaining": 50,
+    "unit_cost": 224.0,
+    "id": "BAT-019"
+  }
+]
