@@ -387,3 +387,10 @@ Collaborative sprint history by Radhika Thiriveedhi, Ramya Sri, and Phani.
 - **Reviewed & Merged By**: Ramya Sri
 - **Modules Included**: edi_interchange_service_013.py
 
+## Sprint Release 056
+- **Scope**: `edi_interchange`
+- **Feature**: Ansi x12 wholesale dispatch interchange gateway.
+- **Lead Engineer**: Ramya Sri
+- **Reviewed & Merged By**: Phani
+- **Modules Included**: edi_interchange_service_014.py
+
